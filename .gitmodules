@@ -1,0 +1,6 @@
+[submodule "dhcp-server/clj-protocol"]
+	path = dhcp-server/clj-protocol
+	url = https://github.com/lonocloud/clj-protocol
+[submodule "conlink"]
+	path = conlink
+	url = https://github.com/lonocloud/conlink

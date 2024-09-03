@@ -1,0 +1,15 @@
+services:
+  conlink:
+    image: lonocloud/conlink:2.5.2
+    cap_add: [SYS_ADMIN, NET_ADMIN, SYS_NICE, NET_BROADCAST, IPC_LOCK, SYS_PTRACE, NET_RAW, SYS_RAWIO, SETUID, SETGID]
+    security_opt: [ 'apparmor:unconfined' ] # needed on Ubuntu 18.04
+    pid: host
+    devices: [ '/dev/net/tun' ] # for ovs-tcpdump
+    env_file: ./.env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker:/var/lib/docker
+      - ./:/remote
+    working_dir: /remote
+    command: /app/build/conlink.js --compose-file ${COMPOSE_FILE:?COMPOSE_FILE must be specified}
+

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+cd $(dirname "$0")/..
+TOP=$(pwd)
+
+DOCKER_COMPOSE="${DOCKER_COMPOSE:-docker compose}" \
+    RESOLVE_DEPS="${TOP}/conlink/node_modules/@lonocloud/resolve-deps/resolve-deps.py" \
+    ${TOP}/conlink/mdc "${@}"

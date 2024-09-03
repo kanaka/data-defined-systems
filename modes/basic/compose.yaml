@@ -1,0 +1,32 @@
+x-network:
+  links:
+    - {service: app, bridge: ctrl, dev: eth0, ip: 10.0.0.1/16,
+       forward: ["8000:8000/tcp"]}
+    - {service: db,  bridge: ctrl, dev: eth0, ip: 10.0.1.1/16}
+
+x-extra-hosts: &extra-hosts
+  - db:      "10.0.1.1"
+
+services:
+  conlink:
+    ports:
+      - 8000:8000/tcp
+
+  app:
+    build: {context: ./app}
+    network_mode: none
+    extra_hosts: { <<: *extra-hosts }
+    volumes:
+      - ./app:/app:ro
+
+  db:
+    image: postgres:12
+    environment:
+      POSTGRES_DB: demo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: demo
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - ./app/initdb.d/:/docker-entrypoint-initdb.d/:ro
+    network_mode: none  # port 5432
+
