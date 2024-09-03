@@ -35,20 +35,24 @@ function error(res, status, msg) {
 
 // Actions
 app.get('/users', async (req, res) => {
+  console.info(`>>> querying users`)
   const users = await User.query()
+  console.info(`<<< queried  users: ${JSON.stringify(users)}`)
   res.json(users)
 })
 
 app.post('/users', async (req, res) => {
-  console.info(`>>> Creating user: ${JSON.stringify(req.body)}`)
+  console.info(`>>> creating user: '${JSON.stringify(req.body)}'`)
   const newUser = await User.query().insert(req.body)
-  console.info(`<<< Created  user: ${JSON.stringify(req.body)}`)
+  console.info(`<<< created  user: '${JSON.stringify(newUser)}'`)
   res.status(201).json(newUser)
 })
 
 app.get('/users/:id', async (req, res) => {
+  console.info(`>>> querying /user/${id}`)
   const user = await User.query().findById(req.params.id)
   if (user) {
+    console.info(`<<< queried  /user/${id}: '${JSON.stringify(user)}'`)
     res.json(user)
   } else {
     return error(res, 404, 'User not found')

@@ -10,10 +10,11 @@ x-extra-hosts: &extra-hosts
 services:
   conlink:
     ports:
-      - 8000:8000/tcp
+      - 8000-8010:8000-8010/tcp
 
   app:
     build: {context: ./app}
+    scale: 1
     network_mode: none
     extra_hosts: { <<: *extra-hosts }
     volumes:

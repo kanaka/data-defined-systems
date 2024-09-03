@@ -45,3 +45,25 @@ Shutdown and fully remove all containers and state:
 ```
 docker compose down --remove-orphans --volumes
 ```
+
+## Scaling app service
+
+Configure and start up basic mode with 3 app services:
+
+```
+bin/mdc basic
+docker compose up --scale app=3 --force-recreate --build
+```
+
+Create a new user via the second app service:
+```
+curl localhost:8001/users/ -X POST -H "Content-type: application/json" -d '{"name":"Doug","email": "doug@example.com"}'
+```
+
+Then query the users via the third app service to show that the DB is
+shared state and has been udpated with the new user:
+
+```
+curl localhost:8002/users/
+```
+
