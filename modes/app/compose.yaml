@@ -1,17 +1,12 @@
 x-network:
   links:
-    - {service: app, bridge: ctrl, dev: eth0, ip: 10.0.0.1/16,
-       forward: ["8000:8000/tcp"]}
+    - {service: app, bridge: ctrl, dev: eth0}
     - {service: db,  bridge: ctrl, dev: eth0, ip: 10.0.1.1/16}
 
 x-extra-hosts: &extra-hosts
   - db:      "10.0.1.1"
 
 services:
-  conlink:
-    ports:
-      - 8000-8010:8000-8010/tcp
-
   app:
     build: {context: ./app}
     scale: 1
@@ -30,4 +25,3 @@ services:
     volumes:
       - ./app/initdb.d/:/docker-entrypoint-initdb.d/:ro
     network_mode: none  # port 5432
-

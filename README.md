@@ -14,10 +14,10 @@ Install conlink npm dependencies:
 
 ## Basic usage
 
-Configure and start up basic mode:
+Configure and start up the "app" mode:
 
 ```
-bin/mdc basic
+bin/mdc app
 docker compose up --force-recreate --build
 ```
 
@@ -48,10 +48,10 @@ docker compose down --remove-orphans --volumes
 
 ## Scaling app service
 
-Configure and start up basic mode with 3 app services:
+Configure and start up "app" mode with 3 "app" replicas:
 
 ```
-bin/mdc basic
+bin/mdc app
 docker compose up --scale app=3 --force-recreate --build
 ```
 
