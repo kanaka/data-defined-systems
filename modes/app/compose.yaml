@@ -21,7 +21,10 @@ services:
       POSTGRES_DB: demo
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: demo
-      POSTGRES_HOST_AUTH_METHOD: trust
+      #POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
-      - ./app/initdb.d/:/docker-entrypoint-initdb.d/:ro
+      - ./conlink/scripts:/scripts:ro
+      - ./.files/db:/files:ro
     network_mode: none  # port 5432
+    entrypoint: /scripts/copy.sh /files / -- docker-entrypoint.sh
+    command: postgres

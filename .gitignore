@@ -1,3 +1,4 @@
 .compose-empty.yaml
 .env
+.files
 node_modules/
