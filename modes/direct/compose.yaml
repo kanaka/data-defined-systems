@@ -1,6 +1,6 @@
 x-network:
   links:
-    - {service: app, bridge: ctrl, dev: eth0, ip: 10.0.0.1/16,
+    - {service: api, bridge: ctrl, dev: eth0, ip: 10.0.0.1/16,
        forward: ["8000:8000/tcp"]}
 
 services:

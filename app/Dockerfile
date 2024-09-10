@@ -7,5 +7,7 @@ RUN mkdir -p /app
 ADD package.json /app/
 RUN cd /app && npm install
 
-ADD index.js knexfile.js /app/
+RUN apt-get -y install iproute2 udhcpc
+
+ADD index.js knexfile.js init.sh dhcp-event.sh /app/
 CMD ["node", "/app/index.js"]

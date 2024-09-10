@@ -1,0 +1,32 @@
+x-network:
+  links:
+    - {service: dhcp-server, bridge: ctrl, dev: eth0, ip: 10.0.1.3/16}
+    - {service: api, bridge: ctrl, dev: eth0}
+
+x-extra-hosts: &extra-hosts
+  - db:      "10.0.1.1"
+
+services:
+  api:
+    scale: 3
+    cap_add: [NET_ADMIN]
+    security_opt: [ 'apparmor:unconfined' ] # needed on Ubuntu 18.04
+    command: /app/init.sh eth0 node /app/index.js
+    volumes:
+      - ./app:/app/  # TODO: temporary
+
+  dhcp-server:
+    build: {context: ./dhcp-server/}
+    cap_add: [NET_ADMIN]
+    security_opt: [ 'apparmor:unconfined' ] # needed on Ubuntu 18.04
+    network_mode: none
+    extra_hosts: { <<: *extra-hosts }
+    volumes:
+      - ./conlink/scripts:/scripts:ro
+      - state:/state:/rw
+    working_dir: /app
+    command: |
+      /scripts/wait.sh -i eth0 -t db:5432 --
+        ./node_modules/.bin/nbb -cp src:clj-protocol/src
+          -m dhcp-server.core/main ./dhcp-config.edn
+

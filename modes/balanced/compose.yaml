@@ -1,0 +1,19 @@
+x-network:
+  links:
+    - {service: balancer,    bridge: ctrl, dev: s0,   ip: 10.0.1.2/16,
+       forward: ["8000:80/tcp"]}
+
+services:
+  conlink:
+    ports:
+      - 127.0.0.1:8000:8000/tcp
+
+  balancer:
+    build: {context: ./balancer/}
+    network_mode: none
+    volumes:
+      - state:/state:ro
+    entrypoint: /monitor.sh /state/servers
+
+volumes:
+  state:

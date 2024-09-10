@@ -1,19 +1,17 @@
 x-network:
   links:
-    - {service: app, bridge: ctrl, dev: eth0}
+    - {service: api, bridge: ctrl, dev: eth0}
     - {service: db,  bridge: ctrl, dev: eth0, ip: 10.0.1.1/16}
 
 x-extra-hosts: &extra-hosts
   - db:      "10.0.1.1"
 
 services:
-  app:
+  api:
     build: {context: ./app}
     scale: 1
     network_mode: none
     extra_hosts: { <<: *extra-hosts }
-    volumes:
-      - ./app:/app:ro
 
   db:
     image: postgres:12
