@@ -1,0 +1,16 @@
+{
+ :if-name "eth0"
+ :pg-opts {:host "db"
+           :port 5432
+           :database "demo"
+           :user "postgres"
+           :password "demo"}
+ :pg-table "dhcp_pool"
+ :dhcp-cfg {:start "10.0.0.100"
+            :end "10.0.0.200"
+            :netmask "255.255.0.0"
+            :gateway nil}
+
+ :haproxy-opts {:output-dir "/state/servers"
+                :server-port 8000}
+}
