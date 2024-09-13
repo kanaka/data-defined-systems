@@ -1,25 +1,21 @@
 {
   "name": "dhcp-server",
   "version": "0.0.1",
-  "description": "DHCP with file configuration and Postgres pool (using clj-protocol)",
+  "description": "clj-protocol based DHCP server with file config, Postgres pool backend, and NATS events.",
   "repository": "https://github.com/lonocloud/clj-protocol",
   "license": "SEE LICENSE IN LICENSE",
   "devDependencies": {
-    "shadow-cljs": "2.14.4"
-  },
-  "overrides": {
-    "nan": "github:jkleinsc/nan#remove_accessor_signature"
+    "shadow-cljs": "2.28.14"
   },
   "dependencies": {
-    "axios": "^1.6.8",
-    "ffi-napi": "^4.0.3",
-    "fs-extra": "^3.0.1",
+    "koffi": "^2.9.0",
+    "fs-extra": "^11.2.0",
     "js-yaml": "^4.1.0",
-    "minimist": "^1.2.0",
-    "nbb": "^0.7.132",
-    "pcap": "^3.1.0",
+    "minimist": "^1.2.8",
+    "nbb": "^1.2.192",
+    "nats": "2.28.2",
+    "pcap": "3.1.0",
     "pg": "^8.11.5",
-    "raw-socket": "1.7.0",
-    "ref-napi": "^3.0.3"
+    "raw-socket": "1.8.1"
   }
 }
