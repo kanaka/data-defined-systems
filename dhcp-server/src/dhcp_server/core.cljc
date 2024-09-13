@@ -9,17 +9,18 @@
             [dhcp.logging :as logging]
             [dhcp.node-server :as server]
             ["fs/promises" :as fs]
+            ["nats" :as nats]
             #_["pg$default" :as pg]))
 
 ;; TODO: use :require syntax when shadow-cljs works with "*$default"
 (def pg (js/require "pg"))
 
-(defn get-table [client table]
+(defn pg-select-all [client table]
   (P/let [result (.query client (str "SELECT * FROM " table ";"))
           rows (js->clj (.-rows result) :keywordize-keys true)]
     rows))
 
-(defn insert-row [client table row]
+(defn pg-insert-row [client table row]
   (P/let [ks (S/join ", " (map name (keys row)))
           vs (vals row)
           vnums (S/join ", " (map #(str "$" %1)
@@ -31,24 +32,18 @@
           result (.query client sql (clj->js vs))]
     result))
 
-(defn write-haproxy-config
-  [{:keys [log-msg haproxy-opts]} ip]
-  (when haproxy-opts
-    (let [{:keys [output-dir server-port]} haproxy-opts
-          svr (str "svr_" (S/replace ip #"[.]" "_"))
-          file (str output-dir "/" ip ".cfg")
-          line (str "server " svr " " ip ":" server-port " check")]
-      (P/do
-        (fs/mkdir output-dir #js {:recursive true})
-        (log-msg :info "Writing to " file ": " line)
-        (fs/writeFile file (str "  " line "\n"))))))
+(defn nats-publish
+  [client subject data]
+  (P/let [sc (nats/StringCodec)
+          msg (.encode sc (js/JSON.stringify (clj->js data)))]
+    (.publish client subject msg)))
 
 (defn query-or-assign-ip
   [{:keys [pg-opts pg-table dhcp-cfg]} mac]
   (P/let
     [pg-client (doto (pg.Client. (clj->js pg-opts))
                  .connect)
-     rows (get-table pg-client pg-table)
+     rows (pg-select-all pg-client pg-table)
      reassigned-ip (:ip (first (filter #(= (:mac %) mac) rows)))
      ip (or reassigned-ip
             (P/let [used-set (set (map :ip rows))
@@ -56,8 +51,8 @@
                                           (:end dhcp-cfg))
                     assign-ip (some #(if (contains? used-set %) nil %)
                                     all-ips)
-                    res (insert-row pg-client pg-table {:mac mac
-                                                        :ip assign-ip})]
+                    res (pg-insert-row pg-client pg-table {:mac mac
+                                                           :ip assign-ip})]
               assign-ip))]
     (.end pg-client)
     (when ip
@@ -68,16 +63,21 @@
 
 (defn pool-handler
   "Takes a parsed DHCP client message `msg-map`, queries the DB
-  for assigned IPs or assigns one, and responds to the client with the
-  assigned address."
-  [{:keys [log-msg server-info] :as cfg} msg-map]
+  for assigned IPs or assigns one, sends a NAT event, and then
+  responds to the client with the assigned address."
+  [{:keys [log-msg server-info nats-cfg nats-client] :as cfg} msg-map]
   (P/let [field-overrides (:fields cfg) ;; config file field/option overrides
           mac (:chaddr msg-map)
           dhcp-cfg (query-or-assign-ip cfg mac)]
     (if (not dhcp-cfg)
       (log-msg :error (str "MAC " mac " could not be queried"))
       (P/let [{:keys [action ip gateway netmask]} dhcp-cfg]
-        (write-haproxy-config cfg ip)
+        (when nats-client
+          (let [{:keys [server subject target-port]} nats-cfg
+                msg {:action "add"
+                     :target (str ip ":" target-port)}]
+            (log-msg :info (str "Publishing to '" server "': " msg))
+            (nats-publish nats-client subject msg)))
         (log-msg :info (str action " " ip "/" netmask " to " mac
                             (when gateway " (gateway " gateway ")")))
         (merge
@@ -103,27 +103,32 @@
   (when-not config-file
     (util/fatal 2 "Must specify a config file"))
 
-  (let [file-cfg (util/load-config config-file)
-        log-msg logging/log-message
+  (P/let
+    [file-cfg (util/load-config config-file)
+     log-msg logging/log-message
 
-        _ (when-not (:if-name file-cfg)
-          (util/fatal 2 "config file missing :if-name"))
-        _ (when-not (:pg-opts file-cfg)
-            (util/fatal 2 (str "config file missing :pg-opts")))
-        _ (doseq [opt [:start :end :netmask]]
-            (when-not (get-in file-cfg [:dhcp-cfg opt])
-              (util/fatal 2 (str "config file missing :dhcp-cfg " opt))))
+     _ (when-not (:if-name file-cfg)
+         (util/fatal 2 "config file missing :if-name"))
+     _ (when-not (:pg-opts file-cfg)
+         (util/fatal 2 (str "config file missing :pg-opts")))
+     _ (doseq [opt [:start :end :netmask]]
+         (when-not (get-in file-cfg [:dhcp-cfg opt])
+           (util/fatal 2 (str "config file missing :dhcp-cfg " opt))))
 
-        ;; precedence: CLI opts, file config, discovered interface info
-        if-info (util/get-if-ipv4 (:if-name file-cfg))
-        user-cfg (util/deep-merge {:server-info if-info
-                                   ;;:disable-broadcast true
-                                   :log-level 2}
-                                  file-cfg)
-        cfg (merge
-              user-cfg
-              {:message-handler pool-handler
-               :log-msg logging/log-message})]
+     ;; precedence: CLI opts, file config, discovered interface info
+     if-info (util/get-if-ipv4 (:if-name file-cfg))
+     user-cfg (util/deep-merge {:server-info if-info
+                                ;;:disable-broadcast true
+                                :log-level 2}
+                               file-cfg)
+
+     nats-client (when-let [svr (get-in file-cfg [:nats-cfg :server])]
+                   (nats/connect #js {:servers svr}))
+     cfg (merge
+           user-cfg
+           {:message-handler pool-handler
+            :log-msg logging/log-message
+            :nats-client nats-client})]
 
     (logging/start-logging cfg)
     (log-msg :info (str "User config: " user-cfg))

@@ -4,11 +4,12 @@ x-network:
     - {service: api, bridge: ctrl, dev: eth0}
 
 x-extra-hosts: &extra-hosts
-  - db:      "10.0.1.1"
+  - db:           "10.0.1.1"
+  - message-bus:  "10.0.1.4"
 
 services:
   api:
-    scale: 3
+    scale: 2
     cap_add: [NET_ADMIN]
     security_opt: [ 'apparmor:unconfined' ] # needed on Ubuntu 18.04
     command: /app/init.sh eth0 node /app/index.js
@@ -23,10 +24,9 @@ services:
     extra_hosts: { <<: *extra-hosts }
     volumes:
       - ./conlink/scripts:/scripts:ro
-      - state:/state:/rw
     working_dir: /app
     command: |
-      /scripts/wait.sh -i eth0 -t db:5432 --
+      /scripts/wait.sh -i eth0 -t db:5432 -t message-bus:4222 --
         ./node_modules/.bin/nbb -cp src:clj-protocol/src
           -m dhcp-server.core/main ./dhcp-config.edn
 
