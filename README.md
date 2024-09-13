@@ -40,10 +40,10 @@ version of the user record):
 curl localhost:8000/users/1 -X PUT -H "Content-type: application/json" -d '{"email": "alice@nowhere.net", "version":0}'
 ```
 
-Shutdown and fully remove all containers and state:
+Shutdown and fully remove all containers and volumes:
 
 ```
-docker compose down --remove-orphans --volumes
+docker compose down --remove-orphans --volumes -t1
 ```
 
 ## Scaling app service
