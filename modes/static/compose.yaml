@@ -1,13 +1,21 @@
 x-network:
   links:
     - {service: api, bridge: ctrl, dev: eth0, ip: 10.0.0.1/16}
+    - {service: static-config, bridge: ctrl, dev: eth0, ip: 10.0.1.5/16}
+
+x-extra-hosts: &extra-hosts
+  - message-bus:  "10.0.1.4"
 
 services:
   api:
     scale: 3
 
   static-config:
-    image: ubuntu:24.04
+    build: {context: ./message-bus/}
+    network_mode: none
+    extra_hosts: { <<: *extra-hosts }
     volumes:
-      - state:/state
-    command: bash -c 'mkdir /state/servers && echo -e "  server server1  10.0.0.1:8000\n  server server2  10.0.0.2:8000\n  server server3  10.0.0.3:8000" > /state/servers/static.cfg'
+      - ./conlink/scripts:/scripts:ro
+    command: |
+      /scripts/wait.sh -i eth0 -t message-bus:4222 --
+        /static-config.sh 10.0.0.1:8000 10.0.0.2:8000 10.0.0.3:8000

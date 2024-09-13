@@ -1,26 +1,26 @@
 #!/bin/bash
 
-cfg_dir=$1; shift
+export NATS_URL="nats://message-bus:4222"
+mkdir -p /tmp/servers
 
-while ! ls "${cfg_dir}"/* >/dev/null 2>&1; do
-  echo "Waiting for '${cfg_dir}/*' to appear"
-  sleep 2
-done
+cp /etc/haproxy-base.cfg /tmp/haproxy.cfg
 
-cat /etc/haproxy-base.cfg "${cfg_dir}"/* > /tmp/haproxy.cfg
-
-haproxy -W -db -f /tmp/haproxy.cfg "${@}" &
+haproxy -W -db -f /tmp/haproxy.cfg &
 svr_pid=$!
 
-cfg_prev=`sha256sum "${cfg_dir}"/*`
-while true; do
-  cfg_cur=`sha256sum "${cfg_dir}"/*`
-  if [ "${cfg_cur}" != "${cfg_prev}" ]; then
-    echo "Sending USR2 to ${svr_pid} to reload config"
-    cat /etc/haproxy-base.cfg "${cfg_dir}"/* > /tmp/haproxy.cfg
-    kill -USR2 ${svr_pid}
-    cfg_prev="${cfg_cur}"
-  fi
-  sleep 2
-done
+nats consumer sub -r events balancer | \
+while IFS= read message; do
+  echo "NATS message: ${message}"
+  action=$(echo "${message}" | jq -r '.action')
+  target=$(echo "${message}" | jq -r '.target')
+  name=$(echo "${target}" | tr '.: ' '_')
+  file=/tmp/servers/${name}.cfg
+  case "${action}" in
+    add)    echo "  server svr_${name} ${target} check" > ${file} ;;
+    delete) rm -f ${file} ;;
+  esac
 
+  # Update the config and restart haproxy
+  cat /etc/haproxy-base.cfg /tmp/servers/*.cfg > /tmp/haproxy.cfg
+  kill -USR2 ${svr_pid}
+done

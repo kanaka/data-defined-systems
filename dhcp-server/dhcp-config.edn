@@ -11,6 +11,7 @@
             :netmask "255.255.0.0"
             :gateway nil}
 
- :haproxy-opts {:output-dir "/state/servers"
-                :server-port 8000}
+ :nats-cfg {:server "message-bus:4222"
+            :subject "dhcp"
+            :target-port 8000}
 }
