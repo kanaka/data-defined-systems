@@ -10,8 +10,11 @@
   (when (and body (not= "" body)) (json/read-str body)))
 
 (defn run-actions [actions-str dest1 dest2]
-  (let [actions (json/read-str actions-str :key-fn keyword)]
-    (loop [actions actions]
+  (let [actions (json/read-str actions-str :key-fn keyword)
+        all-actions (concat [{:method "PUT" :path "/reset"}]
+                            actions
+                            [{:method "GET" :path "/users"}])]
+    (loop [actions all-actions]
       (let [[action & actions] actions
             {:keys [method path payload]} action
             base {:method (keyword (S/lower-case method))
