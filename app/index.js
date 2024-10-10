@@ -22,8 +22,7 @@ class User extends Model {
       properties: {
         id: { type: 'integer' },
         name: { type: 'string', minLength: 1, maxLength: 255 },
-        email: { type: 'string', format: 'email' },
-        version: { type: 'integer' }
+        email: { type: 'string', format: 'email' }
       }
     }
   }
@@ -65,23 +64,18 @@ app.get('/users/:id', async (req, res) => {
 })
 
 app.put('/users/:id', async (req, res) => {
+  const { id } = req.params
+  const updateData = req.body
   if (req.headers['content-type'] !== 'application/json') {
     return error(res, 415, 'Content-Type must be application/json')
   }
-  const { id } = req.params
-  const { version, ...updateData } = req.body
   console.info(`>>> updating /user/${id}: '${JSON.stringify(req.body)}'`)
 
-  if (version === undefined) {
-    return error(res, 409, 'version missing')
-  }
   try {
     const updatedUser = await User.query()
       .findById(id)
-      .where('version', version) // Ensure the version matches
       .patch({
         ...updateData,
-        version: version + 1 // Increment the version
       })
       .returning('*')
 
