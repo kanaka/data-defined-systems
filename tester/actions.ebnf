@@ -8,11 +8,6 @@ post-user  = '{"name":"' name '","email":"' email '"}'
 put-user   = post-user
            | '{"name":"' name '"}'
            | '{"email":"' email '"}'
-id         = nz-number
+id         = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
 name       = 'Joe ' #"[A-Z]"
 email      = 'joe' #"[0-9]" '@example.com'
-
-nz-number  = nz-digit           (* {:weight 1000} *)
-           | '1' any-digit?
-any-digit  = "0" | nz-digit
-nz-digit   = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
