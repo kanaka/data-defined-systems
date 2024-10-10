@@ -1,3 +1,4 @@
+const os = require('os')
 const express = require('express')
 const Knex = require('knex')
 const { Model } = require('objection')
@@ -8,6 +9,8 @@ Model.knex(knex)
 
 const app = express()
 app.use(express.json())
+
+let serverId, buggy = false
 
 // Model
 class User extends Model {
@@ -69,10 +72,19 @@ app.get('/users/:id', async (req, res) => {
 
 app.put('/users/:id', async (req, res) => {
   const { id } = req.params
-  const updateData = req.body
+  let updateData = req.body
   console.info(`>>> PUT - updating /user/${id}: '${JSON.stringify(updateData)}'`)
   if (req.headers['content-type'] !== 'application/json') {
     return error(res, 415, 'Content-Type must be application/json')
+  }
+
+  if (buggy) {
+    console.warn("    BUG: swapping email and name in PUT")
+    updateData = {
+        ...updateData,
+        email: updateData.name,
+        name: updateData.email
+    }
   }
 
   try {
@@ -115,8 +127,23 @@ app.put('/reset', async (req, res) => {
   }
 })
 
-// Start the server
-app.listen(8000, () => {
-  console.log('Server is running on port 8000')
-})
+async function main() {
+  console.log("Waiting for eth0 to be configured")
+  while (!serverId) {
+    const eth0 = os.networkInterfaces().eth0?.find(iface => iface.family === 'IPv4' && !iface.internal)
+    serverId = eth0?.address.split('.').pop()
+    if (!serverId) await new Promise(resolve => setTimeout(resolve, 100))
+  }
 
+  if (process.env["BUGGY"] && {"2":1,"101":1}[serverId]) {
+    console.warn(`Buggy PUT triggered for serverId ${serverId}`)
+    buggy = true
+  }
+
+  // Start the server
+  app.listen(8000, () => {
+    console.log(`Server ${serverId} is running on port 8000`)
+  })
+}
+
+main()
