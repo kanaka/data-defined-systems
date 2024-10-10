@@ -1,9 +1,9 @@
 x-network:
   links:
     - {service: api, bridge: ctrl, dev: eth0, ip: 10.0.0.1/16,
-       forward: ["8000:8000/tcp"]}
+       forward: ["8001:8000/tcp"]}
 
 services:
   conlink:
     ports:
-      - 8000-8010:8000-8010/tcp
+      - 8001-8010:8001-8010/tcp

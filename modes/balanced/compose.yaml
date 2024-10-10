@@ -10,7 +10,7 @@ x-extra-hosts: &extra-hosts
 services:
   conlink:
     ports:
-      - 127.0.0.1:8000:8000/tcp
+      - 8000:8000/tcp
 
   balancer:
     build: {context: ./balancer/}
