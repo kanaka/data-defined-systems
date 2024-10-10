@@ -1,5 +1,6 @@
-actions    = '[\n' action ( ',\n' action )* '\n]'
-action     = '{"method":"POST",'   '"path":"/users",'     '"payload":' post-user '}'  (* {:weight 200} *)
+requests   = '[\n' reset-req ',\n' request ( ',\n' request )* '\n]'
+reset-req  = '{"method":"PUT",'    '"path":"/reset",'     '"payload":{}}'
+request    = '{"method":"POST",'   '"path":"/users",'     '"payload":' post-user '}'  (* {:weight 200} *)
            | '{"method":"PUT",'    '"path":"/users/' id '","payload":' put-user '}'
            | '{"method":"DELETE",' '"path":"/users/' id '"}'
            | '{"method":"GET",'    '"path":"/users/' id '"}'
