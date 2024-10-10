@@ -25,7 +25,8 @@ class User extends Model {
       properties: {
         id: { type: 'integer' },
         name: { type: 'string', minLength: 1, maxLength: 255 },
-        email: { type: 'string', format: 'email' }
+        email: { type: 'string', format: 'email' },
+        version: { type: 'integer' }
       }
     }
   }
@@ -92,6 +93,7 @@ app.put('/users/:id', async (req, res) => {
       .findById(id)
       .patch({
         ...updateData,
+        version: User.raw('version + 1')
       })
       .returning('*')
 
