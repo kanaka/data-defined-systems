@@ -5,7 +5,9 @@
             [org.httpkit.client :as hk]
             [instacheck.core :as instacheck]))
 
-(defn body->json [body] (if (= "" body) nil (json/read-str body)))
+(defn body->json
+  [body]
+  (when (and body (not= "" body)) (json/read-str body)))
 
 (defn run-actions [actions-str dest1 dest2]
   (let [actions (json/read-str actions-str :key-fn keyword)]
@@ -13,7 +15,8 @@
       (let [[action & actions] actions
             {:keys [method path payload]} action
             base {:method (keyword (S/lower-case method))
-                  :body (json/write-str payload)}
+                  :headers {"Content-Type" "application/json"}
+                  :body (when payload (json/write-str payload))}
 
             req1 (hk/request (assoc base :url (str dest1 path)))
             req2 (hk/request (assoc base :url (str dest2 path)))
