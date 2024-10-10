@@ -80,12 +80,7 @@ app.put('/users/:id', async (req, res) => {
   }
 
   if (buggy) {
-    console.warn("    BUG: swapping email and name in PUT")
-    updateData = {
-        ...updateData,
-        email: updateData.name,
-        name: updateData.email
-    }
+    console.warn(`    BUG: skipping version field bump'`)
   }
 
   try {
@@ -93,7 +88,7 @@ app.put('/users/:id', async (req, res) => {
       .findById(id)
       .patch({
         ...updateData,
-        version: User.raw('version + 1')
+        version: User.raw(buggy ? 'version' : 'version + 1')
       })
       .returning('*')
 
