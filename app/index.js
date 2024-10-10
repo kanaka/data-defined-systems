@@ -103,6 +103,18 @@ app.delete('/users/:id', async (req, res) => {
   res.status(204).end()
   console.info(`>>> deleted /user/${id}`)
 })
+
+app.post('/reset', async (req, res) => {
+  console.info(`>>> reseting/deleting all users`)
+  try {
+    await User.query().delete()
+    await knex.raw('ALTER SEQUENCE users_id_seq RESTART WITH 1');
+    res.status(200).send('All users deleted')
+    console.info(`<<< reset/deleted all users`)
+  } catch (error) {
+    console.error(error)
+    res.status(500).send('Error deleting users')
+  }
 })
 
 // Start the server
