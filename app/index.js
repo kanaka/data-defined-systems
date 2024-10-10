@@ -43,14 +43,19 @@ app.get('/users', async (req, res) => {
 
 app.post('/users', async (req, res) => {
   console.info(`>>> creating user: '${JSON.stringify(req.body)}'`)
-  const newUser = await User.query().insert(req.body)
-  console.info(`<<< created  user: '${JSON.stringify(newUser)}'`)
-  res.status(201).json(newUser)
+  try {
+    const newUser = await User.query().insert(req.body)
+    console.info(`<<< created  user: '${JSON.stringify(newUser)}'`)
+    res.status(201).json(newUser)
+  } catch (exception) {
+    return error(res, 500, 'Internal server error')
+  }
 })
 
 app.get('/users/:id', async (req, res) => {
+  const { id } = req.params
   console.info(`>>> querying /user/${id}`)
-  const user = await User.query().findById(req.params.id)
+  const user = await User.query().findById(id)
   if (user) {
     console.info(`<<< queried  /user/${id}: '${JSON.stringify(user)}'`)
     res.json(user)
@@ -65,12 +70,12 @@ app.put('/users/:id', async (req, res) => {
   }
   const { id } = req.params
   const { version, ...updateData } = req.body
+  console.info(`>>> updating /user/${id}: '${JSON.stringify(req.body)}'`)
 
   if (version === undefined) {
     return error(res, 409, 'version missing')
   }
   try {
-    console.info(`>>> updating /user/${id}: '${JSON.stringify(req.body)}'`)
     const updatedUser = await User.query()
       .findById(id)
       .where('version', version) // Ensure the version matches
@@ -82,19 +87,22 @@ app.put('/users/:id', async (req, res) => {
 
     if (updatedUser) {
       console.log(`<<< updated  /user/${id}: '${JSON.stringify(updatedUser)}`)
-      res.json(updatedUser)
+      res.json(updatedUser).status(203).end()
     } else {
       return error(res, 409, 'version/atomicity violation')
     }
-  } catch (error) {
+  } catch (exception) {
     return error(res, 500, 'Internal server error')
   }
 })
 
 app.delete('/users/:id', async (req, res) => {
-  console.info(`Deleting /user/${id}`)
-  await User.query().deleteById(req.params.id)
+  const { id } = req.params
+  console.info(`>>> deleting /user/${id}`)
+  await User.query().deleteById(id)
   res.status(204).end()
+  console.info(`>>> deleted /user/${id}`)
+})
 })
 
 // Start the server
