@@ -49,7 +49,7 @@
   (let [ebnf (slurp ebnf-file)
         actions-gen (instacheck/ebnf->gen ebnf)
         result (instacheck/instacheck
-                 #(run-actions % dest1 dest2) actions-gen {:iterations 10
+                 #(run-actions % dest1 dest2) actions-gen {:iterations 20
                                                            :report-fn report-fn})]
     (println "Result:")
     (pprint result)))
