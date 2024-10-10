@@ -52,7 +52,7 @@ app.post('/users', async (req, res) => {
   }
   try {
     const newUser = await User.query().insert(req.body)
-    res.json(newUser).status(201)
+    res.json({"message": `"Created user ${newUser.id}"`}).status(201)
     console.info(`<<< 201 - created  user: '${JSON.stringify(newUser)}'`)
   } catch (exception) {
     return error(res, 500, 'Internal server error')
@@ -93,13 +93,13 @@ app.put('/users/:id', async (req, res) => {
       .returning('*')
 
     if (updatedUser) {
-      res.json(updatedUser).status(203).end()
+      res.json({"message": `"Updated user ${id}"`}).status(203).end()
       console.log(`<<< 203 - updated  /user/${id}: '${JSON.stringify(updatedUser)}`)
     } else {
-      return error(res, 409, 'failed to udpate user ${id}')
+      return error(res, 409, `failed to udpate user ${id}`)
     }
   } catch (exception) {
-    return error(res, 500, 'Internal server error')
+    return error(res, 500, `Internal server error: ${exception}`)
   }
 })
 
