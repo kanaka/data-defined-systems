@@ -9,7 +9,7 @@ git clone --recursive git@github.com/kanaka/conlink-demo
 Install conlink npm dependencies:
 
 ```
-(cd conlink && npm install)
+for f in conlink dcmon; do (cd $f && npm install); done
 ```
 
 ## Basic usage

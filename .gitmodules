@@ -4,3 +4,6 @@
 [submodule "conlink"]
 	path = conlink
 	url = https://github.com/lonocloud/conlink
+[submodule "dcmon"]
+	path = dcmon
+	url = git@github.com:lonocloud/dcmon
