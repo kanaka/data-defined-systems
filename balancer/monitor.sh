@@ -8,6 +8,12 @@ cp /etc/haproxy-base.cfg /tmp/haproxy.cfg
 haproxy -W -db -f /tmp/haproxy.cfg &
 svr_pid=$!
 
+# wait for stream to appear
+while ! nats stream info events; do
+  echo "Waiting for events stream to appear"
+  sleep 1
+done
+
 nats consumer sub -r events balancer | \
 while IFS= read message; do
   echo "NATS message: ${message}"

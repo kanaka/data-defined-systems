@@ -10,7 +10,7 @@ x-extra-hosts: &extra-hosts
 services:
   api:
     scale: 2
-    cap_add: [NET_ADMIN]
+    cap_add: [NET_ADMIN, NET_RAW]
     security_opt: [ 'apparmor:unconfined' ] # needed on Ubuntu 18.04
     command: /app/init.sh eth0 node /app/index.js
     volumes:
