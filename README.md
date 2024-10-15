@@ -1,5 +1,11 @@
 ## Prerequisites
 
+Host system requirements:
+- docker and docker-compose
+- node and npm
+
+## Setup
+
 Checkout this repo recursively:
 
 ```

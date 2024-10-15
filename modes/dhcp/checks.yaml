@@ -1,0 +1,16 @@
+checks:
+  api:
+    - {id: "udhcp",     regex: "udhcpc: started"}
+    - {id: "discover",  regex: "udhcpc: broadcasting discover"}
+    -
+    - {id: "lease",     regex: "udhcpc: lease of .* obtained from"}
+    - {id: "listening", regex: "Server .* is running on port"}
+    - {id: "ready",     regex: "exec command: node /app/index.js"}
+
+  dhcp-server:
+    - {id: "starting",  regex: "Starting DHCP Server"}
+    - {id: "listening", regex: "Listening to port 67 on"}
+    - {id: "discover",  regex: ":DISCOVER from"}
+    - {id: "assign",    regex: "[Aa]ssigning .* to"}
+    - {id: "publish",   regex: "Publishing to 'message-bus"}
+

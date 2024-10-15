@@ -1,0 +1,5 @@
+checks:
+  conlink:
+    - {id: "listening", regex: "Listening on"}
+    - {id: "connected", regex: "All links connected"}
+

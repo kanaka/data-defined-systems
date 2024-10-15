@@ -1,0 +1,8 @@
+checks:
+  api:
+    - {id: "listening", regex: "Server .* is running on port"}
+
+  db:
+    - {id: "init",      regex: "database cluster will be initialized"}
+    - {id: "listening", regex: "listening on IPv4 address .* port 5432"}
+

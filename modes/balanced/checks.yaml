@@ -1,0 +1,12 @@
+checks:
+  balancer:
+    - {id: "proxy up",  regex: "Loading success"}
+    - {id: "nats up",   regex: "Information for Stream events created"}
+    - {id: "nats msg",  regex: "NATS message"}
+    - {id: "reloading", regex: "Reloading HAProxy"}
+
+  message-bus:
+    - {id: "starting",  regex: "Waiting for NATS to start"}
+    - {id: "ready",     regex: "Server is ready"}
+    - {id: "stream",    regex: "Information for Stream events"}
+    - {id: "consumer",  regex: "Information for Consumer events"}
