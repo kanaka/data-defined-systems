@@ -1,8 +1,9 @@
 x-network:
   links:
-    - {service: balancer,    bridge: ctrl, dev: s0,   ip: 10.0.1.2/16,
+    - {service: balancer,    bridge: ctrl,     dev: ctl0, ip: 10.0.1.2/16,
        forward: ["8000:80/tcp"]}
-    - {service: message-bus, bridge: ctrl, dev: eth0, ip: 10.0.1.4/16}
+    - {service: balancer,    bridge: external, dev: ext0, ip: 10.1.1.2/16}
+    - {service: message-bus, bridge: ctrl,     dev: ctl0, ip: 10.0.1.4/16}
 
 x-extra-hosts: &extra-hosts
   - message-bus:   "10.0.1.4"
@@ -20,7 +21,7 @@ services:
     volumes:
       - ./conlink/scripts:/scripts:ro
       - ./balancer/monitor.sh:/monitor.sh:ro  # temporary
-    entrypoint: /scripts/wait.sh -I s0 -t message-bus:4222 -- /monitor.sh
+    entrypoint: /scripts/wait.sh -I ctl0 -I ext0 -t message-bus:4222 -- /monitor.sh
 
   message-bus:
     build: {context: ./message-bus/}
@@ -28,4 +29,4 @@ services:
     extra_hosts: { <<: *extra-hosts }
     volumes:
       - ./conlink/scripts:/scripts:ro
-    command: /scripts/wait.sh -I eth0 -- /init.sh
+    command: /scripts/wait.sh -I ctl0 -- /init.sh

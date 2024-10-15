@@ -1,5 +1,5 @@
 {
- :if-name "eth0"
+ :if-name "ext0"
  :pg-opts {:host "db"
            :port 5432
            :database "demo"
