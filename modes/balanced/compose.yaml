@@ -14,14 +14,18 @@ services:
 
   balancer:
     build: {context: ./balancer/}
+    cap_add: [NET_BIND_SERVICE]
     network_mode: none
     extra_hosts: { <<: *extra-hosts }
     volumes:
       - ./conlink/scripts:/scripts:ro
-    entrypoint: /scripts/wait.sh -t message-bus:4222 -- /monitor.sh
+      - ./balancer/monitor.sh:/monitor.sh:ro  # temporary
+    entrypoint: /scripts/wait.sh -I s0 -t message-bus:4222 -- /monitor.sh
 
   message-bus:
     build: {context: ./message-bus/}
     network_mode: none
     extra_hosts: { <<: *extra-hosts }
-    command: /init.sh
+    volumes:
+      - ./conlink/scripts:/scripts:ro
+    command: /scripts/wait.sh -I eth0 -- /init.sh
