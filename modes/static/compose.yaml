@@ -1,7 +1,7 @@
 x-network:
   links:
-    - {service: api, bridge: ctrl, dev: eth0, ip: 10.0.0.1/16}
-    - {service: static-config, bridge: ctrl, dev: eth0, ip: 10.0.1.5/16}
+    - {service: api,           bridge: external, dev: ext0, ip: 10.1.0.1/16}
+    - {service: static-config, bridge: ctrl,     dev: ctl0, ip: 10.0.1.5/16}
 
 x-extra-hosts: &extra-hosts
   - message-bus:  "10.0.1.4"
@@ -17,5 +17,5 @@ services:
     volumes:
       - ./conlink/scripts:/scripts:ro
     command: |
-      /scripts/wait.sh -i eth0 -t message-bus:4222 --
-        /static-config.sh 10.0.0.1:8000 10.0.0.2:8000 10.0.0.3:8000
+      /scripts/wait.sh -i ctl0 -t message-bus:4222 --
+        /static-config.sh 10.1.0.1:8000 10.1.0.2:8000 10.1.0.3:8000
