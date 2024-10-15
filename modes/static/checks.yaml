@@ -1,0 +1,4 @@
+checks:
+  static-config:
+    - {id: "starting",  regex: "Running: /static-config.sh"}
+    - {id: "publish",   regex: "Published .* bytes to"}

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+cd $(dirname "$0")/..
+TOP=$(pwd)
+COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-$(basename)}
+. "${TOP}/.env"
+
+checks_files=
+for md in ${MDC_MODE_DIRS//,/ }; do
+  [ -f "${TOP}/${md}/checks.yaml" ] || continue
+  checks_files="${checks_files} ${TOP}/${md}/checks.yaml"
+done
+
+NODE_PATH=${TOP}/dcmon/node_modules \
+  ${TOP}/dcmon/node_modules/.bin/nbb -cp ${TOP}/dcmon/src/ -m dcmon.core \
+  "${@}" "${COMPOSE_PROJECT_NAME}" ${checks_files}
