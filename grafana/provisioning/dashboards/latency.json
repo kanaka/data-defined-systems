@@ -1,0 +1,82 @@
+{
+  "id": null,
+  "uid": "latency_dashboard_combined",
+  "title": "HTTP Latency Comparison",
+  "tags": ["latency", "monitoring", "http"],
+  "timezone": "browser",
+  "schemaVersion": 16,
+  "version": 1,
+  "refresh": "1s",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "HTTP Endpoint Latency Comparison",
+      "id": 1,
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "probe_duration_seconds{job=~\"http_probe_localhost_800[01]\"}",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "interval": "1s",
+      "xaxis": {
+        "show": true,
+        "mode": "time"
+      },
+      "yaxes": [
+        {
+          "show": true,
+          "format": "s",
+          "label": "Latency (seconds)"
+        },
+        {
+          "show": false
+        }
+      ],
+      "lines": true,
+      "fill": 1,
+      "linewidth": 2,
+      "points": true,
+      "pointradius": 1,
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "legend": {
+        "show": true,
+        "values": false,
+        "min": false,
+        "max": false,
+        "avg": false,
+        "current": false,
+        "total": false,
+        "alignAsTable": false
+      },
+      "aliasColors": {},
+      "steppedLine": false
+    }
+  ],
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": ["1s", "2s", "5s", "10s", "30s", "1m"]
+  },
+  "templating": {
+    "list": []
+  },
+  "annotations": {
+    "list": []
+  }
+}
+

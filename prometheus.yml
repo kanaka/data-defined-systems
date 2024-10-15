@@ -1,0 +1,36 @@
+global:
+  scrape_interval: 1s  # Set the default scrape interval to 1 second for rapid checks
+
+scrape_configs:
+  - job_name: 'http_probe_localhost_8000'
+    metrics_path: /probe
+    scrape_interval: 1s
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - localhost:9115  # Blackbox Exporter address
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - replacement: "http://localhost:8000/users"  # The target endpoint to probe
+        target_label: __param_target
+      - target_label: instance
+        replacement: "localhost:8000/users"
+
+  - job_name: 'http_probe_localhost_8001'
+    metrics_path: /probe
+    scrape_interval: 1s
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - localhost:9115  # Blackbox Exporter address
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - replacement: "http://localhost:8001/users"  # The second target endpoint to probe
+        target_label: __param_target
+      - target_label: instance
+        replacement: "localhost:8001/users"
+
