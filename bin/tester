@@ -1,0 +1,19 @@
+#!/bin/bash
+
+cd $(dirname "$0")/..
+TOP=$(pwd)
+
+docker run -it --network host \
+    -v ${TOP}:${TOP} \
+    -v $HOME:$HOME \
+    -v $HOME:/home/ubuntu \
+    -w ${TOP} \
+    -u $(id -u) \
+    -e HOME=$HOME \
+    -e CLJ_CONFIG=tester \
+    clojure:temurin-23-tools-deps-noble \
+    -Sdeps '{:deps {kanaka/tester {:local/root "tester"}}}' \
+    -M -m tester.core \
+    --ebnf-file=tester/actions.ebnf \
+    "${@}"
+
