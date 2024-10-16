@@ -7,3 +7,6 @@
 [submodule "dcmon"]
 	path = dcmon
 	url = git@github.com:lonocloud/dcmon
+[submodule "docs/presentations/reveal.js-submodule"]
+	path = docs/presentations/reveal.js-submodule
+	url = git@github.com:hakimel/reveal.js
