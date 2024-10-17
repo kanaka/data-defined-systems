@@ -3,7 +3,7 @@
 cd $(dirname "$0")/..
 TOP=$(pwd)
 
-docker run -it --network host \
+docker run --rm -it --network host \
     -v ${TOP}:${TOP} \
     -v $HOME:$HOME \
     -v $HOME:/home/ubuntu \
