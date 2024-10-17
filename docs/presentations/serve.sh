@@ -15,15 +15,18 @@ which fswatch >/dev/null 2>/dev/null || die "Could not find fswatch"
 trap "trap - SIGTERM && kill -- -$$" SIGINT SIGTERM EXIT
 
 # Update reveal.js content in web serving directory
-#rsync -a --out-format="%n%L" ${REVEAL}/ reveal.js/ --exclude index.html
 rsync -a --out-format="%n%L" ${REVEAL}/ reveal.js/ --exclude .git
 
 rsync -a --out-format="%n%L" ${SRC}/ ${DST}/
 (
-  fswatch -r -x --exclude ".*~" ${SRC} |
-  while read path events; do \
-    #echo ">> path: ${path}, events: ${events}"
-    rsync -a --out-format="%n%L" ${SRC}/ ${DST}/
+  while true; do
+    fswatch -r -x --latency=2 --exclude ".*~" ${SRC} |
+    while read path events; do \
+        #echo ">> path: ${path}, events: ${events}"
+        rsync -a --out-format="%n%L" ${SRC}/ ${DST}/
+    done
+    echo "fswatch exited, restarting"
+    sleep 1
   done
 ) &
 
