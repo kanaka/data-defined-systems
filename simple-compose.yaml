@@ -1,0 +1,14 @@
+services:
+  api:
+    build: {context: ./app}
+    ports:
+      - 8000:8000/tcp
+
+  db:
+    image: postgres:12
+    environment:
+      POSTGRES_DB: demo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: demo
+    volumes:
+      - ./modes/api/db/files/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
