@@ -125,10 +125,11 @@ app.put('/reset', async (req, res) => {
 })
 
 async function main() {
-  console.log("Waiting for ext0 to be configured")
+  const ifname = process.argv[2]
+  console.log(`Waiting for ${ifname} to be configured`)
   while (!serverId) {
-    const ext0 = os.networkInterfaces().ext0?.find(iface => iface.family === 'IPv4' && !iface.internal)
-    serverId = ext0?.address.split('.').pop()
+    const intf = os.networkInterfaces()[ifname]?.find(iface => iface.family === 'IPv4' && !iface.internal)
+    serverId = intf?.address.split('.').pop()
     if (!serverId) await new Promise(resolve => setTimeout(resolve, 100))
   }
 

@@ -13,7 +13,7 @@ services:
     scale: 2
     cap_add: [NET_ADMIN, NET_RAW]
     security_opt: [ 'apparmor:unconfined' ] # needed on Ubuntu 18.04
-    command: /app/init.sh ext0 node /app/index.js
+    command: /app/init.sh ext0 node /app/index.js ext0
     volumes:
       - ./app:/app/  # TODO: temporary
 

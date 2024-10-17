@@ -12,6 +12,7 @@ services:
     scale: 1
     network_mode: none
     extra_hosts: { <<: *extra-hosts }
+    command: node /app/index.js ext0
 
   db:
     image: postgres:12

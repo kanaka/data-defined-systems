@@ -10,4 +10,4 @@ RUN cd /app && npm install
 RUN apt-get -y install iproute2 udhcpc
 
 ADD index.js knexfile.js init.sh dhcp-event.sh /app/
-CMD ["node", "/app/index.js"]
+CMD ["node", "/app/index.js", "eth0"]
