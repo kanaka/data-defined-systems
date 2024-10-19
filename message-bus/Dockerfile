@@ -1,8 +1,8 @@
-FROM nats:2.10-alpine
+FROM nats:2.10.20-alpine
 
 RUN apk update && \
-    apk add curl && \
-    curl -sf https://binaries.nats.dev/nats-io/natscli/nats@latest | sh && \
+    apk add curl
+RUN curl -sf https://binaries.nats.dev/nats-io/natscli/nats@v0.1.4 | sh && \
     mv nats /bin/nats
 
 ADD init.sh /init.sh

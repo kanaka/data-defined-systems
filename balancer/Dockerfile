@@ -7,7 +7,7 @@ USER root
 
 RUN apt-get -y update && \
     apt-get -y install curl jq iproute2 iputils-ping
-RUN curl -sf https://binaries.nats.dev/nats-io/natscli/nats@latest | sh && \
+RUN curl -sf https://binaries.nats.dev/nats-io/natscli/nats@v0.1.4 | sh && \
     mv nats /bin/
 
 USER haproxy
