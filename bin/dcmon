@@ -2,7 +2,7 @@
 
 cd $(dirname "$0")/..
 TOP=$(pwd)
-COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-$(basename)}
+COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-$(basename "${TOP}")}
 . "${TOP}/.env"
 
 checks_files=
