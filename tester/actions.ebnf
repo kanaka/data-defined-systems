@@ -1,4 +1,4 @@
-requests   = '[\n' request ( ',\n' request )* '\n]'
+requests   = '[' request ( ',\n ' request )* ']\n'
 request    = '{"method":"POST",'   '"path":"/users",'     '"payload":' post-user '}'  (* {:weight 200} *)
            | '{"method":"PUT",'    '"path":"/users/' id '","payload":' put-user '}'
            | '{"method":"DELETE",' '"path":"/users/' id '"}'

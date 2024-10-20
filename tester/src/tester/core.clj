@@ -8,13 +8,15 @@
             [org.httpkit.client :as hk]
             [instaparse.core :as instaparse]
             [instacheck.grammar :as igrammar]
-            [instacheck.cli :as instacheck]))
+            [instacheck.cli :as icli]))
 
 (def usage "HTTP Endpoint Tester
 
 Usage:
   tester check [OPTIONS] <dest1> <dest2>
+  tester run [OPTIONS] <dest1> <dest2> <input-file>
   tester parse [OPTIONS] <inputs>...
+  tester samples [OPTIONS]
 
 Options:
   -h --help           Show this help
@@ -27,8 +29,10 @@ Options:
                       [default: 1]
   --iterations=NUM    Number of test iterations per run
                       [default: 10]
-  --sample-dir=DIR    Output samples/inputs to this dir
-                      [default: samples]
+  --count=NUM         Number of samples to generate
+                      [default: 10]
+  --output-dir=DIR    Output samples/inputs to this dir
+                      [default: output]
   --weights-in=FILE   Weights file (EDN) to override EBNF weights
   --weights-out=FILE  Output weights file (EDN) with fail case weights.
 ")
@@ -46,37 +50,40 @@ Options:
 (defn url [base path]
   (.toString (.resolve (java.net.URI. base) path)))
 
-(defn run-actions [ctx dest1 dest2 sample-path]
-  (let [actions-str (slurp sample-path)
+(defn run-action [ctx dest1 dest2 action]
+  (let [{:keys [method path payload]} action
+        base {:method (keyword (S/lower-case method))
+              :headers {"Content-Type" "application/json"}
+              :body (when payload (json/write-str payload))}
+
+        req1 (hk/request (assoc base :url (url dest1 path)))
+        req2 (hk/request (assoc base :url (url dest2 path)))
+        [resp1 resp2] [@req1 @req2]
+        [body1 body2] (map (comp body->json :body) [resp1 resp2])
+        pass? (and (= (:status resp1) (:status resp2))
+                   (= body1 body2))]
+    (when (:verbose ctx)
+      (prn :run-action :method method :path path
+           :statuses (map :status [resp1 resp2]) :-> pass?))
+    pass?))
+
+(defn run-actions [ctx dest1 dest2 actions-file]
+  (let [actions-str (slurp actions-file)
         actions (json/read-str actions-str :key-fn keyword)
         all-actions (concat [{:method "PUT" :path "/reset"}]
                             actions
                             [{:method "GET" :path "/users"}])]
     (loop [actions all-actions]
       (let [[action & actions] actions
-            {:keys [method path payload]} action
-            base {:method (keyword (S/lower-case method))
-                  :headers {"Content-Type" "application/json"}
-                  :body (when payload (json/write-str payload))}
-
-            req1 (hk/request (assoc base :url (url dest1 path)))
-            req2 (hk/request (assoc base :url (url dest2 path)))
-            [resp1 resp2] [@req1 @req2]
-            [body1 body2] (map (comp body->json :body) [resp1 resp2])
-            pass? (and (= (:status resp1) (:status resp2))
-                        (= body1 body2))]
-        (when (:verbose ctx)
-          (prn :run-actions :method method :path path
-               :statuses (map :status [resp1 resp2]) :-> pass?))
+            pass? (run-action ctx dest1 dest2 action)]
         (if (and pass? (seq actions))
           (recur actions)
           pass?)))))
 
 (defn run [opts]
-  (let [{:keys [check parse verbose runs iterations
-                weights-in ebnf-file sample-dir
-                dest1 dest2
-                ebnf-output inputs]} opts
+  (let [{:keys [check parse samples verbose runs iterations count
+                weights-in ebnf-file ebnf-output output-dir
+                dest1 dest2 inputs input-file]} opts
         _ (when verbose (println "Opts:" (pprint opts)))
         file-weights (when weights-in (edn/read-string (slurp weights-in)))
         actions-parser (instaparse/parser (slurp ebnf-file))
@@ -88,17 +95,25 @@ Options:
                     :weights-res (atom {})
                     :ebnf-output ebnf-output}
                    (when (:verbose opts)
-                     {:log-fn instacheck/pr-err}))
-        check-fn (fn [ctx sample-path]
-                     (run-actions ctx dest1 dest2 sample-path))]
+                     {:log-fn icli/pr-err}))
+        check-fn (fn [ctx input-file]
+                   (run-actions ctx dest1 dest2 input-file))]
     (cond
       check
-      (instacheck/do-check ctx actions-parser sample-dir check-fn
-                           (merge opts {:runs (Integer. runs)
-                                        :iterations (Integer. iterations)}))
+      (icli/do-check ctx actions-parser output-dir check-fn
+                     (merge opts {:runs       (Integer. runs)
+                                  :iterations (Integer. iterations)}))
+
+      run
+      (if (run-actions ctx dest1 dest2 input-file)
+        (do (println "PASS") (System/exit 0))
+        (do (println "FAIL") (System/exit 1)))
 
       parse
-      (instacheck/do-parse ctx actions-parser inputs))))
+      (icli/do-parse ctx actions-parser inputs)
+
+      samples
+      (icli/do-samples ctx actions-parser output-dir (Integer. count)))))
 
 (defn -main [& args]
   (docopt/docopt usage args #(run (clean-opts %))))
