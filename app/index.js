@@ -32,6 +32,10 @@ class User extends Model {
   }
 }
 
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function error(res, status, msg) {
   console.warn(`<<< ${status} - error: ${msg}`)
   return res.status(status).json({ error: msg })
@@ -79,24 +83,22 @@ app.put('/users/:id', async (req, res) => {
     return error(res, 415, 'Content-Type must be application/json')
   }
 
-  if (buggy) {
-    console.warn(`    BUG: skipping version field bump'`)
-  }
-
   try {
-    const updatedUser = await User.query()
-      .findById(id)
-      .patch({
-        ...updateData,
-        version: User.raw(buggy ? 'version' : 'version + 1')
-      })
-      .returning('*')
-
-    if (updatedUser) {
+    const user = await User.query().findById(id)
+    if (user) {
+      const curVersion = user.version
+      await user.$query().patch(updateData).returning('*')
       res.json({"message": `"Updated user ${id}"`}).status(203).end()
+
+      if (buggy) {
+        console.warn(`    BUG: doing extra work before version update to /user/${id}`)
+        await delay(100)
+      }
+      const newVersion = curVersion + 1
+      updatedUser = await User.query().findById(id).patch({version: newVersion}).returning('*')
       console.log(`<<< 203 - updated  /user/${id}: '${JSON.stringify(updatedUser)}`)
     } else {
-      return error(res, 409, `failed to udpate user ${id}`)
+      return error(res, 404, 'User not found')
     }
   } catch (exception) {
     return error(res, 500, `Internal server error: ${exception}`)

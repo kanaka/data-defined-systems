@@ -1,8 +1,0 @@
-x-network:
-  links:
-    - {service: api, bridge: ctrl, dev: ctl0, netem: "delay 5ms"}
-
-services:
-  api:
-    environment:
-      BUGGY: very

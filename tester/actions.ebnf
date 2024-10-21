@@ -1,6 +1,6 @@
 requests   = '[' request ( ',\n ' request )* ']\n'
-request    = '{"method":"POST",'   '"path":"/users",'     '"payload":' post-user '}'  (* {:weight 200} *)
-           | '{"method":"PUT",'    '"path":"/users/' id '","payload":' put-user '}'
+request    = '{"method":"POST",'   '"path":"/users",'     '"payload":' post-user '}'
+           | '{"method":"PUT",'    '"path":"/users/' id '","payload":' put-user '}'  (* {:weight 500} *)
            | '{"method":"DELETE",' '"path":"/users/' id '"}'
            | '{"method":"GET",'    '"path":"/users/' id '"}'
            | '{"method":"GET",'    '"path":"/users"}'
@@ -8,6 +8,14 @@ post-user  = '{"name":"' name '","email":"' email '"}'
 put-user   = post-user
            | '{"name":"' name '"}'
            | '{"email":"' email '"}'
-id         = "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+id         = "1" (* {:weight 1000} *)
+           | "2" (* {:weight 500} *)
+           | "3"
+           | "4"
+           | "5"
+           | "6"
+           | "7"
+           | "8"
+           | "9"
 name       = 'Joe ' #"[A-Z]"
 email      = 'joe' #"[0-9]" '@example.com'
