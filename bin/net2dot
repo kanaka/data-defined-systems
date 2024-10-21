@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -e
+
+cd $(dirname "$0")/..
+TOP=$(pwd)
+. "${TOP}/.env"
+
+CFG_FILE="${TOP}/.conlink-config.json"
+DOT_FILE="${TOP}/conlink/examples/conlink.dot"
+
+echo >&2 "Using compose files: ${COMPOSE_FILE}"
+NODE_PATH=${TOP}/conlink/node_modules \
+  ${TOP}/conlink/conlink \
+      --config-schema ${TOP}/conlink/schema.yaml \
+      --compose-file ${COMPOSE_FILE} \
+      --show-config > ${CFG_FILE}
+echo "Wrote ${CFG_FILE}"
+cat "${CFG_FILE}" | ${TOP}/conlink/net2dot > ${DOT_FILE}
+echo "Wrote ${DOT_FILE}"
+echo
+echo "Start web server:"
+echo "  cd ${TOP}/conlink/examples"
+echo "  python3 -m http.server 8080"
+echo "Browse to: http://localhost:8080?data=conlink.dot"
