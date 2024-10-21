@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+
+VERBOSE="${VERBOSE}"
+RAW="${RAW}"
+TOP_DIR=$(readlink -f $(dirname ${0})/..)
+DOCKER_COMPOSE=${DOCKER_COMPOSE:-docker compose}
+
+usage() {
+    echo >&2 "${0} [OPTS] [NSENTER_OPTS] TARGET... [-- CMD [ARG...]]"
+    echo >&2 "    where each TARGET is: CONTAINER:ARG_1[,ARG_2[,ARG_3]...]"
+    echo >&2 ""
+    echo >&2 "For each TARGET, nsenter into the compose container, and run"
+    echo >&2 "the command with each '{N}' replaced with ARG_N from the TARGET"
+    echo >&2 ""
+    echo >&2 "The default command is: tcpdump -nli {1}"
+    echo >&2 ""
+    echo >&2 "OPTS (general options):"
+    echo >&2 "  -v|--verbose        Verbose output"
+    echo >&2 "  --raw               Raw (unprefixed) output"
+    echo >&2 ""
+    echo >&2 "NSENTER_OPTS (nsenter options):"
+    echo >&2 "  -a                 Enter all namespaces (default)"
+    echo >&2 "  -[muinpUCT]        Enter namespace subset:"
+    echo >&@ "                     mount, utc, ipc, network, pid, user, cgroup, time"
+    exit 2
+}
+
+die() { echo "${*}"; exit 1; }
+
+vecho() { [ "${VERBOSE}" ] && echo >&2 "$*"; }
+
+ps_ns() {
+  local ppid=$1; shift
+  ps -p $(echo $(sudo pstree -A -p ${ppid} | egrep -o "\([0-9]*\)" | egrep -o "[0-9]*") | sed 's/ /,/g') "${@}"
+}
+
+# Process arguments
+TARGS= NSENTER_OPTS=
+while [ "$*" ]; do
+  param=$1; shift; OPTARG=$1
+  case $param in
+  -v|--verbose) VERBOSE=1 ;;
+  --raw) RAW=1 ;;
+  --) break ;;
+  -a|-m|-u|-i|-n|-p|-U|-C|-T) NSENTER_OPTS="${NSENTER_OPTS} ${param}" ;;
+  -*) usage ;;
+  *) TARGS="${TARGS} ${param}" ;;
+  esac
+done
+
+[ -z "${NSENTER_OPTS}" ] && NSENTER_OPTS="-a"
+[ -z "$*" ] && set 'tcpdump' '-nli' '{1}'
+
+# Determine width of prefix field
+pre_width=0
+for t in ${TARGS}; do
+  [ "${#t}" -gt "${pre_width}" ] && pre_width="${#t}"
+done
+pre_width=$(( ${pre_width} + 2 ))  # surounding brackets
+
+# killing nsenter doesn't necessarily kill the forked process so kill
+# the whole process group
+my_pgrp=$(awk '{print $5}' /proc/$$/stat)
+cleanup() {
+    trap - INT TERM EXIT
+    echo "Killing processes (for group ${my_pgrp}): $(echo $(pgrep -g ${my_pgrp}))"
+    sudo pkill -g ${my_pgrp}
+}
+trap cleanup INT TERM EXIT
+
+containers=$(${DOCKER_COMPOSE} ps | grep -v "NAME.*COMMAND" | awk '{print $1}')
+
+pids=
+for t in ${TARGS}; do
+  # Parse target spec
+  case ${t} in *:*) args=${t#*:} ;; *) args= ;; esac
+  svc=${t%:*}
+
+  cname=$(echo "${containers}" | grep "^[^ ]*-${svc}-[0-9]")
+  cpid=$(docker inspect ${cname} | jq '.[0].State.Pid')
+  cpids=$(ps_ns "${cpid}" -o pid,args)
+  pid=${cpid}
+  PREFIX="sudo nsenter ${NSENTER_OPTS} -t ${pid}"
+
+  # Replace '{idx}' variables in the command line
+  cmd=
+  for c in "${@}"; do
+    aidx=0
+    c="${c//\{0\}/${svc}}"
+    for a in ${args//,/ }; do
+      aidx=$(( aidx + 1 ))
+      c="${c//\{${aidx}\}/${a}}"
+    done
+    cmd="${cmd} ${c}"
+  done
+
+  vecho "${t} - cname: $cname, cpid: ${cpid}, pid: $pid"
+  vecho ${PREFIX} ${cmd}
+  if [ "${RAW}" ]; then
+    ${PREFIX} ${cmd}
+  else
+    ${PREFIX} ${cmd} 2>&1 | while IFS= read x; do printf "%${pre_width}s %s\n" "[$t]" "$x"; done &
+  fi
+done
+
+# Wait for backgrounded processes (or Ctrl-C)
+wait
