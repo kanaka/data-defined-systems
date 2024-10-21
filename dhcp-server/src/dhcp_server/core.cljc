@@ -15,28 +15,18 @@
 ;; TODO: use :require syntax when shadow-cljs works with "*$default"
 (def pg (js/require "pg"))
 
-(defn pg-select-all [client table]
-  (P/let [result (.query client (str "SELECT * FROM " table ";"))
-          rows (js->clj (.-rows result) :keywordize-keys true)]
-    rows))
+(defn pg-select-all
+  [client table]
+  (P/let [result (.query client (str "SELECT * FROM " table ";"))]
+    (js->clj (.-rows result) :keywordize-keys true)))
 
-(defn pg-insert-row [client table row]
+(defn pg-insert-row
+  [client table row]
   (P/let [ks (S/join ", " (map name (keys row)))
-          vs (vals row)
-          vnums (S/join ", " (map #(str "$" %1)
-                                  (range 1 (inc (count row)))))
-          sql (str "INSERT INTO " table " (" ks ")"
-                   " VALUES (" vnums ")")
-          _ (prn :sql sql)
-          _ (prn :vs vs)
-          result (.query client sql (clj->js vs))]
+          vnums (S/join ", " (map #(str "$" %1) (range 1 (inc (count row)))))
+          sql (str "INSERT INTO " table " (" ks ")" " VALUES (" vnums ")")
+          result (.query client sql (clj->js (vals row)))]
     result))
-
-(defn nats-publish
-  [client subject data]
-  (P/let [sc (nats/StringCodec)
-          msg (.encode sc (js/JSON.stringify (clj->js data)))]
-    (.publish client subject msg)))
 
 (defn query-or-assign-ip
   [{:keys [pg-opts pg-table dhcp-cfg]} mac]
@@ -44,11 +34,10 @@
     [pg-client (doto (pg.Client. (clj->js pg-opts))
                  .connect)
      rows (pg-select-all pg-client pg-table)
-     reassigned-ip (:ip (first (filter #(= (:mac %) mac) rows)))
-     ip (or reassigned-ip
+     reassign-ip (:ip (first (filter #(= (:mac %) mac) rows)))
+     ip (or reassign-ip
             (P/let [used-set (set (map :ip rows))
-                    all-ips (addrs/ip-seq (:start dhcp-cfg)
-                                          (:end dhcp-cfg))
+                    all-ips (addrs/ip-seq (:start dhcp-cfg) (:end dhcp-cfg))
                     assign-ip (some #(if (contains? used-set %) nil %)
                                     all-ips)
                     res (pg-insert-row pg-client pg-table {:mac mac
@@ -57,9 +46,13 @@
     (.end pg-client)
     (when ip
       (merge dhcp-cfg {:ip ip
-                       :action (if reassigned-ip
-                                 "Reassigning"
-                                 "Assigning")}))))
+                       :action (if reassign-ip "Reassigning" "Assigning")}))))
+
+(defn nats-publish
+  [client subject data]
+  (P/let [sc (nats/StringCodec)
+          msg (.encode sc (js/JSON.stringify (clj->js data)))]
+    (.publish client subject msg)))
 
 (defn pool-handler
   "Takes a parsed DHCP client message `msg-map`, queries the DB
