@@ -1,6 +1,5 @@
 x-network:
   links:
-    - {service: api, bridge: ctrl, dev: ctl0, netem: "delay 100ms"}
-    - {service: db,  bridge: ctrl, dev: ctl0, netem: "delay 100ms"}
-    #- {service: db,  bridge: ctrl, dev: ctl0, netem: "drop 10%"}
+    - {service: api, bridge: ctrl, dev: ctl0, netem: "delay 10ms"}
+    - {service: db,  bridge: ctrl, dev: ctl0, netem: "delay 10ms"}
 
