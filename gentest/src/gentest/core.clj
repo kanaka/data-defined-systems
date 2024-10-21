@@ -80,8 +80,8 @@ Options:
           (recur actions)
           pass?)))))
 
-(defn run [opts]
-  (let [{:keys [check parse samples verbose runs iterations count
+(defn inner-main [opts]
+  (let [{:keys [check run parse samples verbose runs iterations count
                 weights-in ebnf-file ebnf-output output-dir
                 dest1 dest2 inputs input-file]} opts
         [runs iterations count] (map #(Integer. %) [runs iterations count])
@@ -121,4 +121,4 @@ Options:
       (icli/do-samples ctx actions-parser output-dir count))))
 
 (defn -main [& args]
-  (docopt/docopt usage args #(run (clean-opts %))))
+  (docopt/docopt usage args #(inner-main (clean-opts %))))
