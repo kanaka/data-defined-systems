@@ -1,5 +1,6 @@
-.compose-empty.yaml
-.env
-.files
+/.compose-empty.yaml
+/.env
+/output
+/.files
 node_modules/
 .cpcache/
