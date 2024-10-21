@@ -10,10 +10,10 @@ docker run --rm -it --network host \
     -w ${TOP} \
     -u $(id -u) \
     -e HOME=$HOME \
-    -e CLJ_CONFIG=tester \
+    -e CLJ_CONFIG=gentest \
     clojure:temurin-23-tools-deps-noble \
-    -Sdeps '{:deps {kanaka/tester {:local/root "tester"}}}' \
-    -M -m tester.core \
-    --ebnf-file=tester/actions.ebnf \
+    -Sdeps '{:deps {kanaka/gentest {:local/root "gentest"}}}' \
+    -M -m gentest.core \
+    --ebnf-file=gentest/actions.ebnf \
     "${@}"
 

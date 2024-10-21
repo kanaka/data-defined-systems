@@ -1,4 +1,4 @@
-(ns tester.core
+(ns gentest.core
   (:require [clojure.string :as S]
             [clojure.data.json :as json]
             [clojure.pprint :refer [pprint]]
@@ -10,13 +10,13 @@
             [instacheck.grammar :as igrammar]
             [instacheck.cli :as icli]))
 
-(def usage "HTTP Endpoint Tester
+(def usage "HTTP Endpoint Generative Tester
 
 Usage:
-  tester check [OPTIONS] <dest1> <dest2>
-  tester run [OPTIONS] <dest1> <dest2> <input-file>
-  tester parse [OPTIONS] <inputs>...
-  tester samples [OPTIONS]
+  gentest check [OPTIONS] <dest1> <dest2>
+  gentest run [OPTIONS] <dest1> <dest2> <input-file>
+  gentest parse [OPTIONS] <inputs>...
+  gentest samples [OPTIONS]
 
 Options:
   -h --help           Show this help
