@@ -1,3 +1,6 @@
+settings:
+  finished: {api: "id", db: "listening"}
+
 checks:
   api:
     - {id: "listening", regex: "Server .* is running on port"}

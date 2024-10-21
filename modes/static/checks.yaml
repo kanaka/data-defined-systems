@@ -1,3 +1,6 @@
+settings:
+  finished: {static-config: "publish"}
+
 checks:
   static-config:
     - {id: "starting",  regex: "Running: /static-config.sh"}
