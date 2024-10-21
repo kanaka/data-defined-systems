@@ -25,7 +25,7 @@ Options:
                       [default: ./actions.ebnf]
   --ebnf-output=FILE  EBNF file that defines HTTP requests
                       [default: ./actions.ebnf]
-  --runs=NUM          Number of test runs
+  --runs=NUM          Number of test runs (check or run)
                       [default: 1]
   --iterations=NUM    Number of test iterations per run
                       [default: 10]
@@ -84,6 +84,7 @@ Options:
   (let [{:keys [check parse samples verbose runs iterations count
                 weights-in ebnf-file ebnf-output output-dir
                 dest1 dest2 inputs input-file]} opts
+        [runs iterations count] (map #(Integer. %) [runs iterations count])
         _ (when verbose (println "Opts:" (pprint opts)))
         file-weights (when weights-in (edn/read-string (slurp weights-in)))
         actions-parser (instaparse/parser (slurp ebnf-file))
@@ -101,19 +102,23 @@ Options:
     (cond
       check
       (icli/do-check ctx actions-parser output-dir check-fn
-                     (merge opts {:runs       (Integer. runs)
-                                  :iterations (Integer. iterations)}))
+                     (merge opts {:runs       runs
+                                  :iterations iterations}))
 
       run
-      (if (run-actions ctx dest1 dest2 input-file)
-        (do (println "PASS") (System/exit 0))
-        (do (println "FAIL") (System/exit 1)))
+      (let [fails (atom 0)]
+        (dotimes [n runs]
+          (print (str "RUN " n " -> ")) (flush)
+          (if (run-actions ctx dest1 dest2 input-file)
+            (do (println "PASS"))
+            (do (println "FAIL"))))
+        (System/exit (if (= 0 @fails) 0 1)))
 
       parse
       (icli/do-parse ctx actions-parser inputs)
 
       samples
-      (icli/do-samples ctx actions-parser output-dir (Integer. count)))))
+      (icli/do-samples ctx actions-parser output-dir count))))
 
 (defn -main [& args]
   (docopt/docopt usage args #(run (clean-opts %))))
