@@ -10,7 +10,7 @@
   "panels": [
     {
       "type": "graph",
-      "title": "HTTP Endpoint Latency Comparison",
+      "title": "HTTP Endpoint Latency (1s)",
       "id": 1,
       "datasource": "Prometheus",
       "targets": [
@@ -21,7 +21,7 @@
         }
       ],
       "gridPos": {
-        "h": 10,
+        "h": 20,
         "w": 24,
         "x": 0,
         "y": 0
@@ -35,7 +35,11 @@
         {
           "show": true,
           "format": "s",
-          "label": "Latency (seconds)"
+          "label": "Log Latency",
+          "min": 0,
+          "max": 1,
+          "logBase": 10
+
         },
         {
           "show": false
