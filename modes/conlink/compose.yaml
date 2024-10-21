@@ -1,6 +1,6 @@
 services:
   conlink:
-    image: lonocloud/conlink:2.5.2
+    image: lonocloud/conlink:2.5.3
     cap_add: [SYS_ADMIN, NET_ADMIN, SYS_NICE, NET_BROADCAST, IPC_LOCK, SYS_PTRACE, NET_RAW, SYS_RAWIO, SETUID, SETGID]
     security_opt: [ 'apparmor:unconfined' ] # needed on Ubuntu 18.04
     pid: host
