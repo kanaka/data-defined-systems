@@ -10,3 +10,6 @@
 [submodule "docs/presentations/reveal.js-submodule"]
 	path = docs/presentations/reveal.js-submodule
 	url = git@github.com:hakimel/reveal.js
+[submodule "dctest"]
+	path = dctest
+	url = git@github.com:viasat/dctest
