@@ -11,7 +11,22 @@
     font-size: 45%
 }
 
+video {
+  border: solid 1px;
+}
 
+
+/*********************/
+
+figure {
+  text-align: center;
+}
+
+figcaption {
+  margin-top: 5px;
+  font-size: 0.5em;
+  color: #777;
+}
 
 /*********************/
 
