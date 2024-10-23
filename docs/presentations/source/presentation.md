@@ -24,6 +24,7 @@ Setup Page
 Notes:
 
 * Setup:
+  * Set external HDMI to 1920x1200
   * start split presenter/presentation windows
   * Start two terminals
     * Large font size in one (different desktop) 80x44 x 2
@@ -91,7 +92,6 @@ Notes:
 
 _Tools that Enable Data-Defined and Containerized Testing of Multi-Service Networked Systems_
 
-- Tools focused and demo heavy
 - Themes:
   - data-defined
   - containerized
@@ -102,15 +102,15 @@ Notes:
 
 - A bit of a mouthful
 
-- Focus of this presentation is on tools so it will be demo heavy.
-- However, there are themes woven through these tools that I want to
-  emphasize:
+- Focus of this presentation is on tools.
+- However, there are some themes woven through these tools that I want
+  to emphasize:
     - data-defined tools development and testing.
     - containerized
     - clojure: the major tools I'm going to show are written in Clojure
-- lot to cover so I won't take question during the talk but I would
+- <b>Lot to cover so I won't take question during the talk but I would
   love to answer any questions people have either in the discussion
-  channel or in the hall-way track!
+  channel or in the hall-way track!</b>
 
 ---
 
@@ -119,15 +119,12 @@ Notes:
 <br>
 <br>
 
-**Data-defined systems put data in control, driving both the logic and
-behavior.**
+**Data-defined systems put data in control. The data drives the logic
+and behavior of the system.**
 
 Notes:
 
-- Abstract says "data-driven". I've been the fence about which term.
-  I currently prefer "data-defined" but neither is perfect.
-- Other terms in this space that also aren't quite right are
-  "declarative", "spec-driven", and "data-first".
+- [skip terms]
 
 ---
 
@@ -381,7 +378,7 @@ Notes:
 
 Notes:
 - here is the full system that I will be using to demonstrate the
-  tools and data-defined philosophy
+  tools and data-defined approach
 - quick summary:
   - DB store
   - Horizontally scale application or API nodes
@@ -393,7 +390,7 @@ Notes:
   - monitoring on right
   - testing below that
 - has many elements of what make a production system difficult to
-  understand, develop, and test
+  understand, develop, test, and debug
     - use this system as a model to show how a data-defined approach
       can help with these problems
     - even this model is too much to start with ...
@@ -526,7 +523,7 @@ Ctrl-C  # LEFT
 #### compose overlays (override)
 <!-- .slide: class="wideslide" -->
 
-- docker compose supports merging of multiple compose files
+docker compose supports merging of multiple compose files
 
 <div class="columns">
 
@@ -648,7 +645,7 @@ Notes:
 - conlink:
     - arbitrary data-defined L2 and L3 networking
     - dynamic container scale/replicas
-    - network impairments (delay, drops, corruption, etc)
+    - network impairments: delay, drops, corruption, etc
 
 Notes:
 
@@ -717,6 +714,7 @@ Notes:
     runtime.
 - conlink network configuration in a compose file looks like this:
   - this shows conlink config defined at the top-level and within a service
+- can also be specified in separate network config files.
 
 ---
 
@@ -732,7 +730,8 @@ links:
   - {service: api,           bridge: ctrl,     dev: ctl0, ip: 10.0.0.1/16}
   - {service: db,            bridge: ctrl,     dev: ctl0, ip: 10.0.1.1/16}
 
-  - {service: api,           bridge: external, dev: ext0, ip: 10.1.0.1/16, forward: ["8001:8000/tcp"]}
+  - {service: api,           bridge: external, dev: ext0, ip: 10.1.0.1/16,
+     forward: ["8001:8000/tcp"]}
 ```
 <!-- .element class="reduce-font overlap" -->
 ```yaml
@@ -743,7 +742,8 @@ links:
 
   - {service: api,           bridge: external, dev: ext0, ip: 10.1.0.1/16}
 
-  - {service: balancer,      bridge: ctrl,     dev: ctl0, ip: 10.0.1.2/16, forward: ["8000:80/tcp"]}
+  - {service: balancer,      bridge: ctrl,     dev: ctl0, ip: 10.0.1.2/16,
+     forward: ["8000:80/tcp"]}
   - {service: balancer,      bridge: external, dev: ext0, ip: 10.1.1.2/16}
   - {service: message-bus,   bridge: ctrl,     dev: ctl0, ip: 10.0.1.4/16}
 
@@ -758,7 +758,8 @@ links:
 
   - {service: api,           bridge: external, dev: ext0, ip: 10.1.0.1/16}
 
-  - {service: balancer,      bridge: ctrl,     dev: ctl0, ip: 10.0.1.2/16, forward: ["8000:80/tcp"]}
+  - {service: balancer,      bridge: ctrl,     dev: ctl0, ip: 10.0.1.2/16,
+     forward: ["8000:80/tcp"]}
   - {service: balancer,      bridge: external, dev: ext0, ip: 10.1.1.2/16}
   - {service: message-bus,   bridge: ctrl,     dev: ctl0, ip: 10.0.1.4/16}
 
@@ -783,6 +784,21 @@ Notes:
 - here is the result when we select the static module
 
 - and finally the dhcp module
+
+---
+
+#### net2dot
+
+<img src="demo-graphviz-dhcp.svg">
+
+Notes:
+
+- as I mentioned, one advantage of a data-defined approach is the
+  inherent openness to be able to use other tools to generate or
+  consume the data.
+- conlink includes a program called net2dot that will convert the
+  conlink network config into GraphViz dot format which can then be
+  rendered like this.
 
 -----
 
@@ -852,12 +868,19 @@ Notes:
   - dhcp:
     - mdc dhcp, up -d, dcmon
     - CURL localhost:8000/users
-    - `dcenter -n db:ctl0 dhcp-server:ext0 message-bus:ctl0 balancer:ctl0 -- tshark -nli {1} not ip6`
+    - all traffic on conlink configured networks passes through the
+      conlink container. This means we can analyze traffic in one
+      place.
+    - `dc exec conlink tshark -nli any -Y "not (tcp.analysis.retransmission or tcp.analysis.duplicate_ack)" port 5432 or port 4222 or port 67`
+        - capture just postgres, NATS, and DHCP backend control
+          traffic
+        - filter out dups and retransmissions, because we see the same
+          packet in multiple places
     - do `dc scale api=3`
-        - shows backend traffic: postgres, DHCP, NATS
-        - by having whole system running on single host you
-          - god level view of events and network traffic
-          - importantly, single host system so no timestamp skew
+        - by having whole system running on single host you get
+          - omniscient level view of events and network traffic
+          - no timestamp skew due to time skew that's a problem with
+            normal distributed systems.
     - leave up!
 
 ---
@@ -870,20 +893,20 @@ Notes:
       dhcp configs that are still running:
     - mdc monitor, dc up, dc logs -f
     - [switch to present head and show grafana]
-        - see about 5ms of latency in normal operation
+        - see a few ms of latency in normal operation for our dhcp and
+          direct instances.
+        - note that y-axis is logarithmic
     - [switch to slides]
-        - `cat modes/latency/compose.yaml`
-        - restart dhcp with `mdc dhcp,latency`
+        - `cat modes/impair/compose.yaml`
+        - restart dhcp with those modes: `mdc dhcp,impair`
     - [switch to present head and show grafana]
-        - seem about 25ms latency
-    - [switch to slides]
-        - `cat modes/drops/compose.yaml`
-        - restart dhcp with `mdc dhcp,drops`
-    - [switch to present head and show grafana]
-        - latency spikes to 100ms
-    - [switch to slides]
-        - `cat modes/drops/compose.yaml`
-        - restart dhcp with `mdc dhcp,drops`
+        - base latency of dhcp has jumped to 20+ ms
+        - also see periodic spikes into 100s of ms
+    - the ability to add network impairments and quickly see the
+      results on the behavior of the system is really powerful and
+      something that is hard to achieve in production or staging
+      environments.
+    - <font color="red">[switch to slides]</font>
 
 -----
 
@@ -895,7 +918,7 @@ Notes:
 * Define two things:
   * how to generate tests
     * instacheck defines tests using EBNF
-  * how to validate results
+  * how to validate results of those tests
     * Oracle problem
       * Use the simpler configuration as the Oracle! <!-- .element class="fragment" -->
 
@@ -903,21 +926,22 @@ Notes:
 
 - instacheck library provides a method of data-defined testing
 - specifically generative testing or property-based testing
-  - generative testing define two things: how to generate tests, and
-    how to validate those tests
 
-    - define how to generate tests rather than defining each
-      individual test
-      - instacheck defines tests using a formal grammar called EBNF
-          - rather than traditional approach of defining code generators
+- generative testing define two things:
+    - how to generate tests
+    - how to validate those tests
+- instacheck
+    - instacheck defines tests using a formal grammar called EBNF
+        - rather than traditional approach of defining code generators
     - define how to validate results
       - Oracle problem: a way to determine if the results are correct
         given the generated test.
       - For complex systems this can be difficult and you can often end
         up defining a whole parallel model for how the system works.
-      - Our solution: for this type of problem where the problem is
-        often that things work in the small but don't when deployed in
-        production, we have an answer.
+      - for distributed network systems, the problem is often that
+        things work in the small but don't when deployed in
+        production.
+      - For that situation, we have an answer to the Oracl problem:
           - Use the simpler deployment as the Oracle!
 
 ---
@@ -928,11 +952,11 @@ Notes:
 (* actions.ebnf *)
 
 requests   = '[' request ( ',\n ' request )* ']\n'
-request    = '{"method":"POST",'   '"path":"/users",'     '"payload":' post-user '}'
-           | '{"method":"PUT",'    '"path":"/users/' id '","payload":' put-user '}'  (* {:weight 500} *)
+request    = '{"method":"POST",' '"path":"/users",'     '"payload":' post-user '}'
+           | '{"method":"PUT",'  '"path":"/users/' id '","payload":' put-user '}' (* {:weight 500} *)
            | '{"method":"DELETE",' '"path":"/users/' id '"}'
-           | '{"method":"GET",'    '"path":"/users/' id '"}'
-           | '{"method":"GET",'    '"path":"/users"}'
+           | '{"method":"GET",'  '"path":"/users/' id '"}'
+           | '{"method":"GET",'  '"path":"/users"}'
 post-user  = '{"name":"' name '","email":"' email '"}'
 put-user   = post-user
            | '{"name":"' name '"}'
@@ -1029,12 +1053,12 @@ $ cat output/samp-00*
 
 Notes:
 
-- Here is looks like when we use the tool to just generate raw test
-  cases. On average each test case iteration gets bigger or more
-  complicated then the last increasing the likelihood of finding bugs.
-- However, massive test cases are not very useful, so instacheck uses
-  shrinking process to search for a simpler version of the test case
-  that still fails.
+- Here we use gentest to just generate raw test cases. On average each
+  test case iteration gets bigger or more complicated.
+- Greatly increases the probability of finding bugs.
+- However, massive test cases are not very useful for testing and
+  debug, so instacheck uses shrinking process to search for a simpler
+  version of the test case that still fails.
 
 -----
 
@@ -1104,26 +1128,6 @@ tests:
         if: failure()
         run: echo "This will NOT be run!"
 
-  inside-outside:
-    name: Inside and outside test
-    steps:
-      - exec: node1
-        run: echo 'inside node1' && hostname && pwd
-      - exec: :host
-        shell: bash
-        run: echo 'outside compose' && hostname && pwd
-      - exec: node1
-        run: ["echo", "array", "of", "arguments"]
-      - exec: :host
-        run: ["echo", "array", "of", "arguments"]
-
-```
-<!-- .element class="reduce-font-more" -->
-
-  </div>
-  <div class="column column-5">
-
-```yaml
   expressions:
     name: Expressions test
     env:
@@ -1136,6 +1140,14 @@ tests:
           FOO: ${{ env.BAZ }}
         run: [ "2" == "${{ env.FOO }}" ]
 
+
+```
+<!-- .element class="reduce-font-more" -->
+
+  </div>
+  <div class="column column-5">
+
+```yaml
   expect-assertions:
     name: Expect test
     steps:
@@ -1166,6 +1178,7 @@ tests:
           - step.stdout == "Repeated successfully"
       - exec: node1
         run: rm -f repeat-test-file
+
 
 ```
 <!-- .element class="reduce-font-more" -->
@@ -1243,8 +1256,10 @@ Notes:
 
 #### Links
 
-* This Presentation: [kanaka.github.io/data-defined-systems/conj-2024](https://kanaka.github.io/data-defined-systems/conj-2024)
-* Demo System: [github.com/kanaka/data-defined-systems](https://github.com/kanaka/data-defined-systems)
+* This Presentation:<br>
+  [kanaka.github.io/data-defined-systems/conj-2024](https://kanaka.github.io/data-defined-systems/conj-2024)
+* Demo System:<br>
+  [github.com/kanaka/data-defined-systems](https://github.com/kanaka/data-defined-systems)
 * Projects:
   * conlink: [lonocloud.github.io/conlink/](https://lonocloud.github.io/conlink/)
   * mdc: [github.com/lonocloud/conlink/blob/master/mdc](https://github.com/lonocloud/conlink/blob/master/mdc)
@@ -1254,9 +1269,6 @@ Notes:
   * instacheck: [github.com/kanaka/instacheck](https://github.com/kanaka/instacheck)
   * dctest: [viasat.github.io/dctest](https://viasat.github.io/dctest)
 
-  </div>
-  <div class="column column-1">
-    &nbsp;
   </div>
   <div class="column column-3">
 
