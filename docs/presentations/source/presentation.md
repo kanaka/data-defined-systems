@@ -33,7 +33,7 @@ Notes:
   * Share large terminal
   * Open grafana in audience browser window (make sure logged in)
   * tmix setup:
-    * windows: bash, direct, static, dhcp, monitor
+    * windows: bash, direct, dhcp, monitor
     * export `COMPOSE_PROJECT_NAME` in each
     * make sure right dc is on path
     * clear all frames
@@ -94,7 +94,7 @@ _Tools that Enable Data-Defined and Containerized Testing of Multi-Service Netwo
 - Tools focused and demo heavy
 - Themes:
   - data-defined
-  - containerization
+  - containerized
   - clojure
 
 
@@ -106,7 +106,7 @@ Notes:
 - However, there are themes woven through these tools that I want to
   emphasize:
     - data-defined tools development and testing.
-    - containerization
+    - containerized
     - clojure: the major tools I'm going to show are written in Clojure
 - lot to cover so I won't take question during the talk but I would
   love to answer any questions people have either in the discussion
@@ -136,8 +136,6 @@ Notes:
 - Faster dev and test loop
 - Greater interoperability and openness
 - Easier testing and behavior simulation
-- Separation of concerns
-- Explicit vs implicit
 
 <br>
 <br>
@@ -163,12 +161,12 @@ Notes:
 - Faster dev and test loop: less time in compile/build
 - Greater interoperability and openness: other tools can consume and generate data
 - Easier testing and behavior simulation: especially generative testing
-- Separation of concerns: logic and behavior are more distinct
-- Explicit vs implicit: logic is less hidden within code
 
 
 - Given the name on this conference I'm obliged to point out that
-  Clojure itself emobodies a data-defined approach
+  Clojure itself emobodies a data-defined approach.
+  - Syntax is data that defines the AST data-structure that will be
+    generated in memory.
 
 ---
 
@@ -370,33 +368,9 @@ Notes:
 - a data-defined approach combined with Clojure gives really flexible
   and powerful way to quickly create service prototypes (or testing
   mocks, etc) for arbitrary binary network protocols
-    - this shows most of the code needed to create a full DHCP server
-      using clj-protocol
-        - on left is the code for using postgres as IP pool assignment
-        - on right is the DHCP message handler and function that sends
-          DHCP events to NATS.
-
----
-
-### Why not data-defined?
-
-- Can be less readable
-- Tendency for data sprawl
-- Harder to trace and debug
-
-Notes:
-
-- not all roses, there are some potential downsides to data-defined
-  approach
-- Can be less readable: behavior can be emergent rather hard-coded in code
-- Data sprawl: can be harder to determine interactions and
-  dependencies between different parts of the data
-- Harder to trace and debug: downside of logic and behavior being distinct
-    - e.g. a stack trace may point a line of code that is opaque
-      without the additional data context
-
-- for the most part, these downsides aren't fundamental but rather
-  point to a tooling gap
+  - Here are 64 lines of code that use the clj-protocol DHCP
+    definition to create a DHCP server with IP pool stored in postgres
+    and events sent to NATS.
 
 -----
 
@@ -524,7 +498,7 @@ Notes:
 ### Demo: docker compose
 
 Notes:
-- [next page]
+- <font color="red">[next page]</a>
 
 ---
 
@@ -671,13 +645,9 @@ Notes:
     - basically layer 3 (IP) only
     - simplistic / flat view of networks and IP ranges
     - lack of control over interface naming or order
-    - service replica scaling prevents use of user-assigned IPs or
-      MACs
 - conlink:
     - arbitrary data-defined L2 and L3 networking
-    - overlay / merge from multiple sources
     - dynamic container scale/replicas
-    - external connectivity: tunnels, macvlan, ipvlan
     - network impairments (delay, drops, corruption, etc)
 
 Notes:
@@ -879,19 +849,12 @@ Notes:
     - CURL localhost:8002/users  # different port, different api
         - shows conlink assigning incrementing IP based on scale
     - leave up!
-  - static:
-    - mdc static
-    - dcmon in one window, then `up --force-recreate`
-    - dc logs -f, then `CURL localhost:8000/users`
-    - dc exec conlink tshark -nli any not ip6
-    - CURL localhost:8000/users
-    - down   # important!
   - dhcp:
     - mdc dhcp, up -d, dcmon
     - CURL localhost:8000/users
-    - dcenter -n db:ctl0 dhcp-server:ext0 message-bus:ctl0 balancer:ctl0 -- tshark -nli {1} not ip6
-    - do api scale up
-        - shows backend traffic: DB, DHCP, NATS
+    - `dcenter -n db:ctl0 dhcp-server:ext0 message-bus:ctl0 balancer:ctl0 -- tshark -nli {1} not ip6`
+    - do `dc scale api=3`
+        - shows backend traffic: postgres, DHCP, NATS
         - by having whole system running on single host you
           - god level view of events and network traffic
           - importantly, single host system so no timestamp skew
@@ -905,7 +868,7 @@ Notes:
 - DEMO part 2
     - start up separate independent config to monitor the direct and
       dhcp configs that are still running:
-    - mdc monitor, dc up
+    - mdc monitor, dc up, dc logs -f
     - [switch to present head and show grafana]
         - see about 5ms of latency in normal operation
     - [switch to slides]
@@ -1324,6 +1287,50 @@ Notes:
 -----
 
 ### Extra Slides
+
+-----
+
+### Why not data-defined?
+
+- Can be less readable
+- Tendency for data sprawl
+- Harder to trace and debug
+
+Notes:
+
+- not all roses, there are some potential downsides to data-defined
+  approach
+- Can be less readable: behavior can be emergent rather hard-coded in code
+- Data sprawl: can be harder to determine interactions and
+  dependencies between different parts of the data
+- Harder to trace and debug: downside of logic and behavior being distinct
+    - e.g. a stack trace may point a line of code that is opaque
+      without the additional data context
+
+- for the most part, these downsides aren't fundamental but rather
+  point to a tooling gap
+
+-----
+
+### Demo Extras
+
+- static configuration
+- dcenter
+
+Notes:
+
+  - static:
+    - mdc static
+    - dcmon in one window, then `up --force-recreate`
+    - dc logs -f, then `CURL localhost:8000/users`
+    - dc exec conlink tshark -nli any not ip6
+    - CURL localhost:8000/users
+    - down   # important!
+  - dhcp:
+    - mdc dhcp, up -d, dcmon
+    - CURL localhost:8000/users
+    - `dcenter -n db:ctl0 dhcp-server:ext0 message-bus:ctl0 balancer:ctl0 -- tshark -nli {1} not ip6`
+
 
 -----
 
