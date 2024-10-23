@@ -31,6 +31,7 @@ Options:
                       [default: 10]
   --count=NUM         Number of samples to generate
                       [default: 10]
+  --seed=SEED         Use SEED for RNG (check only)
   --output-dir=DIR    Output samples/inputs to this dir
                       [default: output]
   --weights-in=FILE   Weights file (EDN) to override EBNF weights
@@ -81,11 +82,17 @@ Options:
           pass?)))))
 
 (defn inner-main [opts]
-  (let [{:keys [check run parse samples verbose runs iterations count
+  (let [{:keys [check run parse samples verbose
+                runs iterations count seed
                 weights-in ebnf-file ebnf-output output-dir
                 dest1 dest2 inputs input-file]} opts
         [runs iterations count] (map #(Integer. %) [runs iterations count])
         _ (when verbose (println "Opts:" (pprint opts)))
+        seed (when seed
+               (when (not= 1 runs)
+                 (icli/pr-err "--run must be 1 when --seed used")
+                 (System/exit 2))
+               (java.math.BigInteger. seed))
         file-weights (when weights-in (edn/read-string (slurp weights-in)))
         actions-parser (instaparse/parser (slurp ebnf-file))
         comment-weights (igrammar/comment-trek
@@ -103,6 +110,7 @@ Options:
       check
       (icli/do-check ctx actions-parser output-dir check-fn
                      (merge opts {:runs       runs
+                                  :seed       seed
                                   :iterations iterations}))
 
       run
