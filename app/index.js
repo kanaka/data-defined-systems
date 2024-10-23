@@ -92,7 +92,7 @@ app.put('/users/:id', async (req, res) => {
 
       if (buggy) {
         console.warn(`    BUG: doing extra work before version update to /user/${id}`)
-        await delay(100)
+        await delay(200)
       }
       const newVersion = curVersion + 1
       updatedUser = await User.query().findById(id).patch({version: newVersion}).returning('*')
