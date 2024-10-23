@@ -1,4 +1,0 @@
-x-network:
-  links:
-    - {service: db,  bridge: ctrl, dev: ctl0, netem: "drop 20%"}
-

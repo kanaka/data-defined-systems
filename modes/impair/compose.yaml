@@ -3,3 +3,5 @@ x-network:
     - {service: api, bridge: ctrl, dev: ctl0, netem: "delay 10ms"}
     - {service: db,  bridge: ctrl, dev: ctl0, netem: "delay 10ms"}
 
+    - {service: db,  bridge: ctrl, dev: ctl0, netem: "drop 20%"}
+

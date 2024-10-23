@@ -1,0 +1,194 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="812pt" height="235pt" viewBox="0.00 0.00 812.00 235.20">
+<g id="graph0" class="graph" transform="translate(4,231.1999969482422) scale(1)">
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-231.2 808,-231.2 808,4 -4,4"></polygon>
+<g id="clust1" class="cluster">
+<title>cluster_host</title>
+<polygon fill="#f5f5f5" stroke="#666666" points="8,-8 8,-219.2 796,-219.2 796,-8 8,-8"></polygon>
+<text text-anchor="middle" x="402" y="-202.6" font-family="Times,serif" font-size="14.00">host system</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_conlink</title>
+<path fill="#c5d1e7" stroke="#7396a0" stroke-width="3" d="M28,-16C28,-16 776,-16 776,-16 782,-16 788,-22 788,-28 788,-28 788,-105.6 788,-105.6 788,-111.6 782,-117.6 776,-117.6 776,-117.6 28,-117.6 28,-117.6 22,-117.6 16,-111.6 16,-105.6 16,-105.6 16,-28 16,-28 16,-22 22,-16 28,-16"></path>
+<text text-anchor="middle" x="402" y="-101" font-family="Times,serif" font-size="14.00">conlink/network</text>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_bridge_:ctrl</title>
+<polygon fill="#c8badc" stroke="#6e509f" points="317,-24 317,-84.8 780,-84.8 780,-24 317,-24"></polygon>
+<text text-anchor="middle" x="548.5" y="-68.2" font-family="Times,serif" font-size="14.00">ctrl</text>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_bridge_:external</title>
+<polygon fill="#c8badc" stroke="#6e509f" points="24,-24 24,-84.8 309,-84.8 309,-24 24,-24"></polygon>
+<text text-anchor="middle" x="166.5" y="-68.2" font-family="Times,serif" font-size="14.00">external</text>
+</g>
+<g id="clust5" class="cluster">
+<title>cluster_service_api</title>
+<path fill="#c1d0d7" stroke="#7396a6" stroke-width="2" d="M691,-125.6C691,-125.6 765,-125.6 765,-125.6 771,-125.6 777,-131.6 777,-137.6 777,-137.6 777,-174.4 777,-174.4 777,-180.4 771,-186.4 765,-186.4 765,-186.4 691,-186.4 691,-186.4 685,-186.4 679,-180.4 679,-174.4 679,-174.4 679,-137.6 679,-137.6 679,-131.6 685,-125.6 691,-125.6"></path>
+<text text-anchor="middle" x="728" y="-169.8" font-family="Times,serif" font-size="14.00">service 'api'</text>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_service_db</title>
+<path fill="#c1d0d7" stroke="#7396a6" stroke-width="2" d="M601,-125.6C601,-125.6 659,-125.6 659,-125.6 665,-125.6 671,-131.6 671,-137.6 671,-137.6 671,-174.4 671,-174.4 671,-180.4 665,-186.4 659,-186.4 659,-186.4 601,-186.4 601,-186.4 595,-186.4 589,-180.4 589,-174.4 589,-174.4 589,-137.6 589,-137.6 589,-131.6 595,-125.6 601,-125.6"></path>
+<text text-anchor="middle" x="630" y="-169.8" font-family="Times,serif" font-size="14.00">service 'db'</text>
+</g>
+<g id="clust7" class="cluster">
+<title>cluster_service_balancer</title>
+<path fill="#c1d0d7" stroke="#7396a6" stroke-width="2" d="M478,-125.6C478,-125.6 569,-125.6 569,-125.6 575,-125.6 581,-131.6 581,-137.6 581,-137.6 581,-174.4 581,-174.4 581,-180.4 575,-186.4 569,-186.4 569,-186.4 478,-186.4 478,-186.4 472,-186.4 466,-180.4 466,-174.4 466,-174.4 466,-137.6 466,-137.6 466,-131.6 472,-125.6 478,-125.6"></path>
+<text text-anchor="middle" x="523.5" y="-169.8" font-family="Times,serif" font-size="14.00">service 'balancer'</text>
+</g>
+<g id="clust8" class="cluster">
+<title>cluster_service_message_DASH_bus</title>
+<path fill="#c1d0d7" stroke="#7396a6" stroke-width="2" d="M331,-125.6C331,-125.6 446,-125.6 446,-125.6 452,-125.6 458,-131.6 458,-137.6 458,-137.6 458,-174.4 458,-174.4 458,-180.4 452,-186.4 446,-186.4 446,-186.4 331,-186.4 331,-186.4 325,-186.4 319,-180.4 319,-174.4 319,-174.4 319,-137.6 319,-137.6 319,-131.6 325,-125.6 331,-125.6"></path>
+<text text-anchor="middle" x="388.5" y="-169.8" font-family="Times,serif" font-size="14.00">service 'message-bus'</text>
+</g>
+<g id="clust9" class="cluster">
+<title>cluster_service_dhcp_DASH_server</title>
+<path fill="#c1d0d7" stroke="#7396a6" stroke-width="2" d="M122,-125.6C122,-125.6 232,-125.6 232,-125.6 238,-125.6 244,-131.6 244,-137.6 244,-137.6 244,-174.4 244,-174.4 244,-180.4 238,-186.4 232,-186.4 232,-186.4 122,-186.4 122,-186.4 116,-186.4 110,-180.4 110,-174.4 110,-174.4 110,-137.6 110,-137.6 110,-131.6 116,-125.6 122,-125.6"></path>
+<text text-anchor="middle" x="177" y="-169.8" font-family="Times,serif" font-size="14.00">service 'dhcp-server'</text>
+</g>
+<!-- out_DASH_api_1_DASH_ctl0 -->
+<g id="node1" class="node">
+<title>out_DASH_api_1_DASH_ctl0</title>
+<polygon fill="#e8e8c8" stroke="#af6b4e" points="772.05,-52 715.95,-52 715.95,-32 772.05,-32 772.05,-52"></polygon>
+<text text-anchor="middle" x="744" y="-39" font-family="Times,serif" font-size="10.00">api_1-ctl0</text>
+</g>
+<!-- out_DASH_db_1_DASH_ctl0 -->
+<g id="node2" class="node">
+<title>out_DASH_db_1_DASH_ctl0</title>
+<polygon fill="#e8e8c8" stroke="#af6b4e" points="698.33,-52 643.67,-52 643.67,-32 698.33,-32 698.33,-52"></polygon>
+<text text-anchor="middle" x="671" y="-39" font-family="Times,serif" font-size="10.00">db_1-ctl0</text>
+</g>
+<!-- out_DASH_balancer_1_DASH_ctl0 -->
+<g id="node3" class="node">
+<title>out_DASH_balancer_1_DASH_ctl0</title>
+<polygon fill="#e8e8c8" stroke="#af6b4e" points="626.19,-52 547.81,-52 547.81,-32 626.19,-32 626.19,-52"></polygon>
+<text text-anchor="middle" x="587" y="-39" font-family="Times,serif" font-size="10.00">balancer_1-ctl0</text>
+</g>
+<!-- out_DASH_message_DASH_bus_1_DASH_ctl0 -->
+<g id="node4" class="node">
+<title>out_DASH_message_DASH_bus_1_DASH_ctl0</title>
+<polygon fill="#e8e8c8" stroke="#af6b4e" points="529.92,-52 434.08,-52 434.08,-32 529.92,-32 529.92,-52"></polygon>
+<text text-anchor="middle" x="482" y="-39" font-family="Times,serif" font-size="10.00">message-bus_1-ctl0</text>
+</g>
+<!-- out_DASH_dhcp_DASH_server_1_DASH_ctl0 -->
+<g id="node5" class="node">
+<title>out_DASH_dhcp_DASH_server_1_DASH_ctl0</title>
+<polygon fill="#e8e8c8" stroke="#af6b4e" points="416.52,-52 325.48,-52 325.48,-32 416.52,-32 416.52,-52"></polygon>
+<text text-anchor="middle" x="371" y="-39" font-family="Times,serif" font-size="10.00">dhcp-server_1-ctl0</text>
+</g>
+<!-- out_DASH_api_1_DASH_ext0 -->
+<g id="node6" class="node">
+<title>out_DASH_api_1_DASH_ext0</title>
+<polygon fill="#e8e8c8" stroke="#af6b4e" points="301.27,-52 242.73,-52 242.73,-32 301.27,-32 301.27,-52"></polygon>
+<text text-anchor="middle" x="272" y="-39" font-family="Times,serif" font-size="10.00">api_1-ext0</text>
+</g>
+<!-- out_DASH_balancer_1_DASH_ext0 -->
+<g id="node7" class="node">
+<title>out_DASH_balancer_1_DASH_ext0</title>
+<polygon fill="#e8e8c8" stroke="#af6b4e" points="224.41,-52 143.59,-52 143.59,-32 224.41,-32 224.41,-52"></polygon>
+<text text-anchor="middle" x="184" y="-39" font-family="Times,serif" font-size="10.00">balancer_1-ext0</text>
+</g>
+<!-- out_DASH_dhcp_DASH_server_1_DASH_ext0 -->
+<g id="node8" class="node">
+<title>out_DASH_dhcp_DASH_server_1_DASH_ext0</title>
+<polygon fill="#e8e8c8" stroke="#af6b4e" points="125.74,-52 32.26,-52 32.26,-32 125.74,-32 125.74,-52"></polygon>
+<text text-anchor="middle" x="79" y="-39" font-family="Times,serif" font-size="10.00">dhcp-server_1-ext0</text>
+</g>
+<!-- api_COLON_ctl0 -->
+<g id="node9" class="node">
+<title>api_COLON_ctl0</title>
+<polygon fill="#e8e8c8" stroke="#af6b4e" points="769.5,-153.6 738.5,-153.6 738.5,-133.6 769.5,-133.6 769.5,-153.6"></polygon>
+<text text-anchor="middle" x="754" y="-140.6" font-family="Times,serif" font-size="10.00">ctl0</text>
+</g>
+<!-- api_COLON_ctl0&#45;&gt;out_DASH_api_1_DASH_ctl0 -->
+<g id="edge1" class="edge">
+<title>api_COLON_ctl0-&gt;out_DASH_api_1_DASH_ctl0</title>
+<path fill="none" stroke="black" d="M753.08,-133.41C751.46,-117.32 748.09,-83.76 745.94,-62.36"></path>
+<polygon fill="black" stroke="black" points="749.4,-61.77 744.92,-52.17 742.44,-62.47 749.4,-61.77"></polygon>
+</g>
+<!-- api_COLON_ext0 -->
+<g id="node10" class="node">
+<title>api_COLON_ext0</title>
+<polygon fill="#e8e8c8" stroke="#af6b4e" points="720.72,-153.6 687.28,-153.6 687.28,-133.6 720.72,-133.6 720.72,-153.6"></polygon>
+<text text-anchor="middle" x="704" y="-140.6" font-family="Times,serif" font-size="10.00">ext0</text>
+</g>
+<!-- api_COLON_ext0&#45;&gt;out_DASH_api_1_DASH_ext0 -->
+<g id="edge2" class="edge">
+<title>api_COLON_ext0-&gt;out_DASH_api_1_DASH_ext0</title>
+<path fill="none" stroke="black" d="M691.65,-133.49C686.72,-130.37 680.84,-127.25 675,-125.6 655.65,-120.12 330.2,-128.03 313,-117.6 293.01,-105.48 282.07,-79.86 276.63,-62.05"></path>
+<polygon fill="black" stroke="black" points="279.94,-60.87 273.92,-52.15 273.19,-62.72 279.94,-60.87"></polygon>
+</g>
+<!-- db_COLON_ctl0 -->
+<g id="node11" class="node">
+<title>db_COLON_ctl0</title>
+<polygon fill="#e8e8c8" stroke="#af6b4e" points="663.5,-153.6 632.5,-153.6 632.5,-133.6 663.5,-133.6 663.5,-153.6"></polygon>
+<text text-anchor="middle" x="648" y="-140.6" font-family="Times,serif" font-size="10.00">ctl0</text>
+</g>
+<!-- db_COLON_ctl0&#45;&gt;out_DASH_db_1_DASH_ctl0 -->
+<g id="edge3" class="edge">
+<title>db_COLON_ctl0-&gt;out_DASH_db_1_DASH_ctl0</title>
+<path fill="none" stroke="black" d="M650.12,-133.41C653.85,-117.25 661.66,-83.45 666.6,-62.06"></path>
+<polygon fill="black" stroke="black" points="670.04,-62.7 668.88,-52.17 663.22,-61.13 670.04,-62.7"></polygon>
+</g>
+<!-- balancer_COLON_ctl0 -->
+<g id="node12" class="node">
+<title>balancer_COLON_ctl0</title>
+<polygon fill="#e8e8c8" stroke="#af6b4e" points="573.5,-153.6 542.5,-153.6 542.5,-133.6 573.5,-133.6 573.5,-153.6"></polygon>
+<text text-anchor="middle" x="558" y="-140.6" font-family="Times,serif" font-size="10.00">ctl0</text>
+</g>
+<!-- balancer_COLON_ctl0&#45;&gt;out_DASH_balancer_1_DASH_ctl0 -->
+<g id="edge4" class="edge">
+<title>balancer_COLON_ctl0-&gt;out_DASH_balancer_1_DASH_ctl0</title>
+<path fill="none" stroke="black" d="M560.68,-133.41C565.38,-117.25 575.22,-83.45 581.45,-62.06"></path>
+<polygon fill="black" stroke="black" points="584.9,-62.75 584.33,-52.17 578.17,-60.79 584.9,-62.75"></polygon>
+</g>
+<!-- balancer_COLON_ext0 -->
+<g id="node13" class="node">
+<title>balancer_COLON_ext0</title>
+<polygon fill="#e8e8c8" stroke="#af6b4e" points="507.72,-153.6 474.28,-153.6 474.28,-133.6 507.72,-133.6 507.72,-153.6"></polygon>
+<text text-anchor="middle" x="491" y="-140.6" font-family="Times,serif" font-size="10.00">ext0</text>
+</g>
+<!-- balancer_COLON_ext0&#45;&gt;out_DASH_balancer_1_DASH_ext0 -->
+<g id="edge5" class="edge">
+<title>balancer_COLON_ext0-&gt;out_DASH_balancer_1_DASH_ext0</title>
+<path fill="none" stroke="black" d="M478.63,-133.53C473.71,-130.42 467.83,-127.29 462,-125.6 437.66,-118.53 256.15,-129.92 234,-117.6 212.25,-105.5 198.18,-79.47 190.67,-61.6"></path>
+<polygon fill="black" stroke="black" points="193.89,-60.23 187,-52.19 187.37,-62.77 193.89,-60.23"></polygon>
+</g>
+<!-- message_DASH_bus_COLON_ctl0 -->
+<g id="node14" class="node">
+<title>message_DASH_bus_COLON_ctl0</title>
+<polygon fill="#e8e8c8" stroke="#af6b4e" points="450.5,-153.6 419.5,-153.6 419.5,-133.6 450.5,-133.6 450.5,-153.6"></polygon>
+<text text-anchor="middle" x="435" y="-140.6" font-family="Times,serif" font-size="10.00">ctl0</text>
+</g>
+<!-- message_DASH_bus_COLON_ctl0&#45;&gt;out_DASH_message_DASH_bus_1_DASH_ctl0 -->
+<g id="edge6" class="edge">
+<title>message_DASH_bus_COLON_ctl0-&gt;out_DASH_message_DASH_bus_1_DASH_ctl0</title>
+<path fill="none" stroke="black" d="M439.34,-133.41C447.03,-117.1 463.21,-82.82 473.28,-61.48"></path>
+<polygon fill="black" stroke="black" points="476.57,-62.71 477.67,-52.17 470.24,-59.72 476.57,-62.71"></polygon>
+</g>
+<!-- dhcp_DASH_server_COLON_ctl0 -->
+<g id="node15" class="node">
+<title>dhcp_DASH_server_COLON_ctl0</title>
+<polygon fill="#e8e8c8" stroke="#af6b4e" points="236.5,-153.6 205.5,-153.6 205.5,-133.6 236.5,-133.6 236.5,-153.6"></polygon>
+<text text-anchor="middle" x="221" y="-140.6" font-family="Times,serif" font-size="10.00">ctl0</text>
+</g>
+<!-- dhcp_DASH_server_COLON_ctl0&#45;&gt;out_DASH_dhcp_DASH_server_1_DASH_ctl0 -->
+<g id="edge7" class="edge">
+<title>dhcp_DASH_server_COLON_ctl0-&gt;out_DASH_dhcp_DASH_server_1_DASH_ctl0</title>
+<path fill="none" stroke="black" d="M236.56,-141.39C255.92,-139.24 289.31,-133.38 313,-117.6 334.57,-103.23 351.61,-78.18 361.49,-61.11"></path>
+<polygon fill="black" stroke="black" points="364.69,-62.57 366.46,-52.12 358.56,-59.18 364.69,-62.57"></polygon>
+</g>
+<!-- dhcp_DASH_server_COLON_ext0 -->
+<g id="node16" class="node">
+<title>dhcp_DASH_server_COLON_ext0</title>
+<polygon fill="#e8e8c8" stroke="#af6b4e" points="151.72,-153.6 118.28,-153.6 118.28,-133.6 151.72,-133.6 151.72,-153.6"></polygon>
+<text text-anchor="middle" x="135" y="-140.6" font-family="Times,serif" font-size="10.00">ext0</text>
+</g>
+<!-- dhcp_DASH_server_COLON_ext0&#45;&gt;out_DASH_dhcp_DASH_server_1_DASH_ext0 -->
+<g id="edge8" class="edge">
+<title>dhcp_DASH_server_COLON_ext0-&gt;out_DASH_dhcp_DASH_server_1_DASH_ext0</title>
+<path fill="none" stroke="black" d="M129.83,-133.41C120.58,-116.95 101.04,-82.2 89.06,-60.9"></path>
+<polygon fill="black" stroke="black" points="92.11,-59.17 84.16,-52.17 86.01,-62.6 92.11,-59.17"></polygon>
+</g>
+</g>
+</svg>
