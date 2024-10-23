@@ -62,6 +62,8 @@ Notes:
 * [Read title]
 * Or as this talk could have been titled:
   "What this system needs is more YAML!"
+* So whether you love or hate YAML, I hope you're able to get
+  something out of this talk.
 
 ---
 
@@ -72,14 +74,16 @@ Notes:
 * Started at Equinix this year (2024)
 * PhD in CS in 2019 (Generative Testing of Browser Render Engines)
 * Clojurescript-in-Clojurescript (2013 Clojure West)
-* Created Make-a-Lisp / mal (Clojure West 2014 lightning talk)
-* Open source: noVNC, websockify, raft.js, miniMAL, wac, wam
+* Created Make-a-Lisp / mal
+* Open source: noVNC, websockify, raft.js, miniMAL, wam
 
 Notes:
 
-- start with a quick personal intro
-* Today I will cover some other open source projects I am involved
-  with
+* start with a quick personal intro
+* [READ]
+* Some additional open source projects I started
+* But today I am going to cover some different open source projects I am
+  involved with
 
 -----
 
@@ -87,7 +91,7 @@ Notes:
 
 _Tools that Enable Data-Defined and Containerized Testing of Multi-Service Networked Systems_
 
-- Tools heavy and demo focused
+- Tools focused and demo heavy
 - Themes:
   - data-defined
   - containerization
@@ -120,11 +124,10 @@ behavior.**
 
 Notes:
 
-- Both "data-driven" and "data-defined" are already overloaded
-  term or art in some contexts. Other terms in this space that also
-  aren't quite right are "declarative", "spec-driven", and "data-first".
-- "Data-defined" is probably better than what's currently in the
-  abstract. So I'm going to use that going forward.
+- Abstract says "data-driven". I've been the fence about which term.
+  I currently prefer "data-defined" but neither is perfect.
+- Other terms in this space that also aren't quite right are
+  "declarative", "spec-driven", and "data-first".
 
 ---
 
@@ -153,17 +156,6 @@ Clojure:
 </div>
 <!-- .element class="fragment" data-fragment-index="1" -->
 
-<div>
-
-miniMAL:
-```json
-["def", "unless", ["~",
-  ["fn", ["p","a","b"],
-    ["list", ["`", "if"], "p", "b", "a"]]]]
-```
-
-</div>
-<!-- .element class="fragment" data-fragment-index="2" -->
 
 Notes:
 
@@ -176,9 +168,7 @@ Notes:
 
 
 - Given the name on this conference I'm obliged to point out that
-  Clojure itself emobodies a data-defined approach:
-    - The miniMAL project I mentioned takes this to an extreme: the
-      code is in fact raw JSON.
+  Clojure itself emobodies a data-defined approach
 
 ---
 
@@ -559,16 +549,6 @@ Ctrl-C  # LEFT
 ### Data-defined service composition
 <!-- .slide: class="fullslide" -->
 
-- docker compose override / overlay
-- deep merge multiple compose files
-
-Notes:
-
-- docker compose has an override or overlay capability where you can
-  merge multiple compose files.
-
----
-
 #### compose overlays (override)
 <!-- .slide: class="wideslide" -->
 
@@ -624,13 +604,19 @@ services:
 
 Notes:
 
+- docker compose has an override or overlay capability where you can
+  merge multiple compose files.
+
 - here is an example two compose files are being merged together
-    - essentially a deep merge with array values appending
-        - the image key is just overridden
+    - essentially a deep merge with array values appending and map
+      values merged
+    - a few special cases
         - environments and volumes are merged as a map even if defined as a list
 - compose overlays have limitations:
   - Unwieldy once you have more than 2 files.
   - No way to represent dependencies.
+  - Upper right would not work without one on the left because bar
+    does not have an image or build defined.
 
 ---
 
@@ -688,7 +674,6 @@ Notes:
     - service replica scaling prevents use of user-assigned IPs or
       MACs
 - conlink:
-    - easy to add to existing docker compose
     - arbitrary data-defined L2 and L3 networking
     - overlay / merge from multiple sources
     - dynamic container scale/replicas
@@ -700,15 +685,11 @@ Notes:
 - docker compose has major networking limitations
     - basically layer 3 (IP) only
     - simplistic / flat view of networks and IP assignment
-    - no control over interface naming or order
-    - scaling service replicas prevents use of user-assigned IPs or
-      MAC addresses or port forwarding
+    - has ability to link container to more than one network however:
+        - no control over interface naming or order
+        - scaling service replicas prevents use of user-assigned IPs
+          or MAC addresses or port forwarding
 - [READ]
-- network configuration is defined either inline (x-network)
-  or separate network configuration files:
-    - different compose files and network files are merged
-      together in dependency order.
-    - later definitions can override or extend earlier ones.
 
 ---
 
@@ -734,6 +715,7 @@ services:
 ```
 
 network configuration:
+<!-- .element class="fragment" data-fragment-index="1" -->
 
 ```yaml
 x-network:
@@ -751,7 +733,7 @@ services:
       links:
         - {bridge: ctrl, dev: eth0}
 ```
-<!-- .element class="reduce-font fragment" -->
+<!-- .element class="reduce-font fragment" data-fragment-index="1" -->
 
 Notes:
 - enabling conlink is as simple as adding this boilerplate to your
@@ -761,7 +743,10 @@ Notes:
     - mount the docker socket to get events from host docker engine
 - can coexist with normal docker networking
   - but typically you'll want to disable docker networking in your
-    other containers for strong isolation from Internet at runtime.
+    other services in order to have strong isolation from Internet at
+    runtime.
+- conlink network configuration in a compose file looks like this:
+  - this shows conlink config defined at the top-level and within a service
 
 ---
 
@@ -772,14 +757,16 @@ Notes:
   <div class="column column-5">
 
 ```yaml
+# mdc direct
 links:
   - {service: api,           bridge: ctrl,     dev: ctl0, ip: 10.0.0.1/16}
   - {service: db,            bridge: ctrl,     dev: ctl0, ip: 10.0.1.1/16}
 
   - {service: api,           bridge: external, dev: ext0, ip: 10.1.0.1/16, forward: ["8001:8000/tcp"]}
 ```
-<!-- .element class="reduce-font fragment overlap" data-fragment-index="1" -->
+<!-- .element class="reduce-font overlap" -->
 ```yaml
+# mdc static
 links:
   - {service: api,           bridge: ctrl,     dev: ctl0, ip: 10.0.0.1/16}
   - {service: db,            bridge: ctrl,     dev: ctl0, ip: 10.0.1.1/16}
@@ -792,8 +779,9 @@ links:
 
   - {service: static-config, bridge: ctrl,     dev: ctl0, ip: 10.0.1.5/16}
 ```
-<!-- .element class="reduce-font fragment overlap" data-fragment-index="2" -->
+<!-- .element class="reduce-font fragment overlap" data-fragment-index="1" -->
 ```yaml
+# mdc dhcp
 links:
   - {service: api,           bridge: ctrl,     dev: ctl0, ip: 10.0.0.1/16}
   - {service: db,            bridge: ctrl,     dev: ctl0, ip: 10.0.1.1/16}
@@ -807,16 +795,24 @@ links:
   - {service: dhcp-server,   bridge: ctrl,     dev: ctl0, ip: 10.0.1.3/16}
   - {service: dhcp-server,   bridge: external, dev: ext0, ip: 10.1.1.3/16}
 ```
-<!-- .element class="reduce-font fragment overlap" data-fragment-index="3" -->
+<!-- .element class="reduce-font fragment overlap" data-fragment-index="2" -->
   </div>
   <div class="column column-3">
-    <img src="demo-composition-direct.png" width=100% class="fragment overlap" data-fragment-index="1"/>
-    <img src="demo-composition-static.png" width=100% class="fragment overlap" data-fragment-index="2"/>
-    <img src="demo-composition-dhcp.png"   width=100% class="fragment overlap" data-fragment-index="3"/>
+    <img src="demo-composition-direct.png" width=100% class="overlap" data-fragment-index="1"/>
+    <img src="demo-composition-static.png" width=100% class="fragment overlap" data-fragment-index="1"/>
+    <img src="demo-composition-dhcp.png"   width=100% class="fragment overlap" data-fragment-index="2"/>
   </div>
 </div>
 
 Notes:
+
+- when we run mdc to select the direct this is the resulting 
+  composition that results from merging the conlink configs defined in
+  the direct module and the transitive api module:
+
+- here is the result when we select the static module
+
+- and finally the dhcp module
 
 -----
 
@@ -847,19 +843,24 @@ checks:
 
 Notes:
 
-- useful for visual feedback
-- data defined checks within each module that are merged together
-- optional finished settings are useful for testing up condition
-    - each module can define own finished conditions
-    - only when conditions from all selected modules have completed
-      will dcmon exit
-- also has event per line output
+- another challenge when you have lots of services defined in docker
+  compose is the flood of logs to analyze to figure out the state of
+  the system
+- to address that issue dcmon provides a way to define status checks
+  and visually represent the whole system in summary form.
+- top shows what dcmon output looks like for the dhcp composition.
+- bottom shows how those checks are defined for the balancer service
+    - most of the checks and regex matches against log output
+    - but you can also run commands to do status checks
+- checks that are defined within each module are merged together for
+  final check composition that dcmon uses.
 
 -----
 
 ### Demo: compose, mdc, conlink, dcmon
 
 Notes:
+- Let's move on to a demo of mdc, conlink, and dcmon
 - [next page]
 
 ---
@@ -871,8 +872,8 @@ Notes:
   - direct:
     - mdc direct
     - dcmon in one window, then `up --force-recreate`
-    - CURL localhost:8001/users
     - dc logs -f, describe logs
+    - CURL localhost:8001/users
     - do scale up
         - see conlink create both interfaces (north and south)
     - CURL localhost:8002/users  # different port, different api
@@ -891,7 +892,9 @@ Notes:
     - dcenter -n db:ctl0 dhcp-server:ext0 message-bus:ctl0 balancer:ctl0 -- tshark -nli {1} not ip6
     - do api scale up
         - shows backend traffic: DB, DHCP, NATS
-        - importantly, single host system so no timestamp skew
+        - by having whole system running on single host you
+          - god level view of events and network traffic
+          - importantly, single host system so no timestamp skew
     - leave up!
 
 ---
@@ -925,31 +928,34 @@ Notes:
 
 #### [instacheck](https://github.com/kanaka/instacheck)
 
-* generative testing (Property-based Testing)
-  * define how to generate tests
+* Generative Testing (Property-based Testing).
+* Define two things:
+  * how to generate tests
     * instacheck defines tests using EBNF
-  * define how to validate results
+  * how to validate results
     * Oracle problem
       * Use the simpler configuration as the Oracle! <!-- .element class="fragment" -->
 
 Notes:
 
-- generative testing or property-based testing
-  - may also hear it described as QuickCheck which was the Haskell
-    tool that popularized the approach
-  - define how to generate tests rather than defining each
-    individual test
-    - instacheck defines tests using EBNF
-        - rather than traditional approach of defining code generators
-  - define how to validate results
-    - Oracle problem: a way to determine if the results are correct
-      given the generated test.
-    - For complex systems this can be difficult and you can often end
-      up defining a whole parallel model for how the system works.
-    - Our solution: for this type of problem where the problem is
-      often that things work in the small but don't when deployed in
-      production, we have an answer.
-        - Use the simpler deployment as the Oracle!
+- instacheck library provides a method of data-defined testing
+- specifically generative testing or property-based testing
+  - generative testing define two things: how to generate tests, and
+    how to validate those tests
+
+    - define how to generate tests rather than defining each
+      individual test
+      - instacheck defines tests using a formal grammar called EBNF
+          - rather than traditional approach of defining code generators
+    - define how to validate results
+      - Oracle problem: a way to determine if the results are correct
+        given the generated test.
+      - For complex systems this can be difficult and you can often end
+        up defining a whole parallel model for how the system works.
+      - Our solution: for this type of problem where the problem is
+        often that things work in the small but don't when deployed in
+        production, we have an answer.
+          - Use the simpler deployment as the Oracle!
 
 ---
 
@@ -983,6 +989,55 @@ email      = 'joe' #"[0-9]" '@example.com'
 
 ```
 
+Notes:
+
+- Here is the EBNF for tests that we are going to generate. In this
+  case we are generating a JSON list of maps where each map defines an
+  HTTP to send.
+- Technically this is an EBNF grammar for a parser that can parse our
+  test defintions.
+- But instacheck uses this in reverse and generates tests that fit the
+  grammar.
+- If you look at the generation of IDs right in the middle, it's
+  basically a logical OR alternation.
+- But note the special comments for the digits 1 and 2. The default
+  weight for each alternation branch in the grammar is 100. We set
+  1 and 2 to be generated 10 and 5 times as often respectively.
+
+---
+
+#### Data-defined test weights (edn)
+
+```clojure
+{[:id :alt 0] 1000,
+ [:id :alt 1] 500,
+ [:id :alt 2] 100,
+ [:id :alt 3] 100,
+ [:id :alt 4] 100,
+ [:id :alt 5] 100,
+ [:id :alt 6] 100,
+ [:id :alt 7] 100,
+ [:id :alt 8] 100,
+ [:put-user :alt 0] 100,
+ [:put-user :alt 1] 100,
+ [:put-user :alt 2] 100,
+ [:request :alt 0] 100,
+ [:request :alt 1] 500,
+ [:request :alt 2] 100,
+ [:request :alt 3] 100,
+ [:request :alt 4] 100,
+ [:requests :cat 2 :star 0] 100,
+ [:requests :cat 2 :star nil] 100}
+
+```
+
+Notes:
+
+- Here are the paths through the grammar and the resulting weights at
+  each alternation or repetition point in the grammar.
+- gentest can load a custom weights file to adjust the generation
+  process.
+
 ---
 
 ```shell
@@ -1011,20 +1066,12 @@ $ cat output/samp-00*
 
 Notes:
 
-- Not just static tests, but PBT/generative tests in data-defined
-  way
-- quick overview of instacheck
-- oracle problem
-    - Scenario: Bug that only happens in full scaled production
-      deployments. We suspect a bug that happens with certain
-      sequences of requests but nobody has been able to pinpoint the
-      issue yet and it seems a bit non-deterministic.
-    - We want to try generative property-based testing, but the
-      problem is when we generate a request sequence, what is the
-      right answer?
-    - Well in this particular scenario where we have a bug that only
-      happens in production, we have an Oracle: the simpler
-      configuration.
+- Here is looks like when we use the tool to just generate raw test
+  cases. On average each test case iteration gets bigger or more
+  complicated then the last increasing the likelihood of finding bugs.
+- However, massive test cases are not very useful, so instacheck uses
+  shrinking process to search for a simpler version of the test case
+  that still fails.
 
 -----
 
@@ -1042,18 +1089,20 @@ Notes:
 - DEMO
     - start up direct and dhcp instances [restart dhcp]
         - we have two instances running now. The full system and the
-          simpler direct instance as a test Oracle.
-    - show success test
+          simpler direct instance we are using as a test Oracle.
+    - generate and run tests against the two instances:
       `gentest check http://localhost:8000 http://localhost:8001`
         - show samples
-    - add bug module and restart dhcp
+    - add synthetic bug module and restart dhcp
     - show testing again
         - run a few times until failure
             - describe result output
+            - SEED: 1729643716824
         - use run command with sample
           `gentest run http://localhost:8000 http://localhost:8001 output/sample-final` 
     - load weights from existing failures for faster reproduction
-      `gentest parse --weights output/weights.edn http://localhost:8000 http://localhost:8001`
+      `gentest parse http://localhost:8000 http://localhost:8001 output/sample-final`
+        - shows 
         - show faster/better reproduction
         - capture/show response logs and what is actually
           different
@@ -1066,10 +1115,111 @@ Notes:
 
 #### [dctest](https://github.com/viasat/dctest)
 
+<div class="columns">
+  <div class="column column-5">
+
+```yaml
+name: Example Suite
+
+env:
+  BAZ: ${{ 1 + 1 }}
+
+tests:
+
+  passing:
+    name: Passing test
+    steps:
+      - exec: node1
+        env:
+          FOO: bar
+        run: |
+          [ "${FOO}" == "bar" ]
+      - exec: node1
+        if: success()
+        run: echo "This will be run!"
+      - exec: node1
+        if: failure()
+        run: echo "This will NOT be run!"
+
+  inside-outside:
+    name: Inside and outside test
+    steps:
+      - exec: node1
+        run: echo 'inside node1' && hostname && pwd
+      - exec: :host
+        shell: bash
+        run: echo 'outside compose' && hostname && pwd
+      - exec: node1
+        run: ["echo", "array", "of", "arguments"]
+      - exec: :host
+        run: ["echo", "array", "of", "arguments"]
+
+```
+<!-- .element class="reduce-font-more" -->
+
+  </div>
+  <div class="column column-5">
+
+```yaml
+  expressions:
+    name: Expressions test
+    env:
+      BAR: ${{ 1 + 1 }}
+    steps:
+      - exec: node1
+        run: [ "2" == "${BAR}" ]
+      - exec: node1
+        env:
+          FOO: ${{ env.BAZ }}
+        run: [ "2" == "${{ env.FOO }}" ]
+
+  expect-assertions:
+    name: Expect test
+    steps:
+      - exec: node1
+        run: echo -n "2"
+        expect: step.stdout == "2"
+      - exec: node1
+        run: |
+          echo -n '{"a": {"b": 3}, "c": "Hello World", "d": [1, 2, 3]}'
+        expect:
+          - contains(fromJSON(step.stdout).c, "World")
+          - fromJSON(step.stdout).d.count() == 3
+
+  repeat:
+    name: Repeat test
+    steps:
+      - exec: node1
+        run: rm -f repeat-test-file
+      - exec: node1
+        repeat: { retries: 2, interval: '1s' }
+        run: |
+          if [ ! -f repeat-test-file ]; then
+            touch repeat-test-file
+          else
+            echo -n 'Repeated successfully'
+          fi
+        expect:
+          - step.stdout == "Repeated successfully"
+      - exec: node1
+        run: rm -f repeat-test-file
+
+```
+<!-- .element class="reduce-font-more" -->
+
+
+  </div>
+</div>
+
 Notes:
 
-- ...
-- show running in CI
+- Once we have data-defined tests, we want to be able to data-define
+  test suites. That's what the dctest project is about.
+- Unfortunatley, I'm not going to have time to demo it today.
+- But this can give you a taste of what it is currently capable of.
+- It's a fairly young project and so there is still a lot of key
+  functionality on the roadmap. But it's already got some cool
+  features and it actively being used and developed. So check it out.
 
 -----
 
@@ -1147,15 +1297,29 @@ Notes:
   </div>
   <div class="column column-3">
 
-#### Project Contributors:
+#### Current Project Contributors:
 
   * Aaron Brooks (Equinix)
   * Joel Martin (Equinix)
   * Jon Smock (Viasat)
+  * Norman Morales Suarez (Viasat)
   * Greg Warner (Viasat)
 
   </div>
 </div>
+
+Notes:
+
+- Here are links to this presentation, the demo system, and the
+  varous projects.
+- I also want to thank the other current active contributors to these
+  projects. [READ names]
+- These tools are at various stages of maturity but all still
+  in-progress.
+- If these tools or the data-defined approach is something that
+  you get excited about, please let us know, or just start using them
+  and contributing and improving them!
+- Thanks!
 
 -----
 
