@@ -1,0 +1,109 @@
+
+.reveal pre code {
+    max-height: unset;
+}
+
+.reveal .reduce-font {
+    font-size: 50%
+}
+
+.reveal .reduce-font-more {
+    font-size: 45%
+}
+
+video {
+  border: solid 1px;
+}
+
+/*
+.reveal h3,h4,h5,h6 {
+  text-transform: none;
+}
+*/
+
+
+/*********************/
+
+figure {
+  text-align: center;
+}
+
+figcaption {
+  margin-top: 5px;
+  font-size: 0.5em;
+  color: #777;
+}
+
+/*********************/
+
+.reveal .slides section:not(:has(.videoslide, .fullslide)) {
+  top: 5%;
+  left: 5%;
+  width: 90%;
+  height: 90%;
+}
+.reveal .slides section.videoslide {
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+}
+.reveal .slides section.videoslide * {
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/*********************/
+
+.reveal .slides section.fullslide {
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+}
+.reveal .slides section.fullslide * {
+  max-width: 100%;
+  max-height: unset;
+}
+
+/*********************/
+
+.reveal .overlap {
+  position: absolute;
+  max-height: unset;
+  left: 50%;
+  right: 50%;
+  transform: translate(-50%);
+}
+
+.reveal .columns {
+  display: flex;
+  max-height: unset;
+}
+.column {
+  position: relative;
+}
+.column {
+  position: relative;
+}
+.column-5 {
+  flex: 5;
+}
+.column-3 {
+  flex: 3;
+}
+.column-2 {
+  flex: 2;
+}
+.column-1 {
+  flex: 1;
+}
+
+/*********************/
+
+.huge-symbol {
+  font-size: 500%;
+  align-content: center;
+  line-height: 0.6;
+}

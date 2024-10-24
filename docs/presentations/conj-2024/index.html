@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Data Defined Tools for System Development and Test</title>
+  <!-- Normalize/reset CSS -->
+  <link rel="stylesheet" href="../reveal.js/dist/reset.css">
+  <!-- Reveal standard stylesheet -->
+  <link rel="stylesheet" href="../reveal.js/dist/reveal.css">
+  <!-- Use the reveal white theme by default -->
+  <link rel="stylesheet" href="../reveal.js/dist/theme/white.css" id="theme">
+  <!-- Code highlight theme -->
+  <link rel="stylesheet" href="../reveal.js/plugin/highlight/zenburn.css" id="highlight-theme">
+  <!-- Alternate code highlighting theme (higher contrast) -->
+  <!--
+  <link rel="stylesheet" href="../plugin/highlight/monokai.css" id="highlight-theme">
+  -->
+
+  <!-- Header and footer formatting -->
+  <link rel="stylesheet" href="headers-footers.css">
+
+  <!-- Demo CSS -->
+  <link rel="stylesheet" href="demo.css">
+</head>
+
+<body>
+  <!-- Main content -->
+  <div class="reveal">
+    <div class="slides">
+      <!-- External markdown -->
+      <section data-markdown="presentation.md"
+               data-separator="^-----\n"
+               data-separator-vertical="^---\n"
+               data-separator-notes="^Notes:"
+               data-charset="iso-8859-15">
+      </section>
+    </div>
+  </div>
+
+  <!-- Headers and footers (start hidden) -->
+  <div id="hidden" style="display:none;">
+    <div id="headers-footers">
+      <div id="header-left">
+        &nbsp;
+      </div>
+      <div id="header-right">
+        &nbsp;
+      </div>
+      <div id="footer-left">
+        Clojure/conj 2024
+      </div>
+      <div id="footer-right" style="margin: 0px;">
+        &nbsp;
+      </div>
+    </div>
+  </div>
+
+  <script src="../reveal.js/dist/reveal.js"></script>
+  <script src="../reveal.js/plugin/highlight/highlight.js"></script>
+  <script src="../reveal.js/plugin/markdown/markdown.js"></script>
+  <script src="../reveal.js/plugin/notes/notes.js"></script>
+  <script>
+    Reveal.initialize({
+      disableLayout: true,
+      // highlight must be after markdown
+      plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ],
+      hash: true,
+      slideNumber: true
+    })
+
+    // Add header/footer content
+    let hfs = document.getElementById('headers-footers')
+    if (window.location.search.match(/print-pdf/gi)) {
+      // For PDF export, add to each slide separately
+      Reveal.addEventListener('ready', (event) => {
+        let sbs = document.querySelectorAll('.slide-background')
+        for (let sb of sbs) {
+          sb.append(hfs.cloneNode(true))
+        }
+      })
+    } else {
+      // For normal mode, just add to the top global element
+      let dr = document.querySelector('div.reveal')
+      dr.append(hfs)
+    }
+  </script>
+
+  <!-- Screen sharing to multiple video targets on different slides -->
+  <script src="share-screen.js"></script>
+
+  <!-- Embedding drawio diagrams -->
+  <script type="text/javascript" src="https://www.draw.io/js/viewer-static.min.js"></script>
+  <script>
+    Reveal.addEventListener('ready', function() {
+      GraphViewer.processElements()
+    })
+  </script>
+</body>
+
+</html>
