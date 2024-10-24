@@ -9,7 +9,7 @@ Host system requirements:
 Checkout this repo recursively:
 
 ```
-git clone --recursive git@github.com/kanaka/conlink-demo
+git clone --recursive git@github.com:kanaka/data-defined-systems
 ```
 
 Install conlink npm dependencies:
@@ -20,11 +20,17 @@ for f in conlink dcmon dctest; do (cd $f && npm install); done
 
 ## Basic usage
 
-Configure and start up the "app" mode:
+Configure and start up the "dhcp" mode:
 
 ```
-bin/mdc app
+bin/mdc dhcp
 docker compose up --force-recreate --build
+```
+
+Monitor the startup status:
+
+```
+dcmon
 ```
 
 Curl current users:
@@ -52,24 +58,12 @@ Shutdown and fully remove all containers and volumes:
 docker compose down --remove-orphans --volumes -t1
 ```
 
-## Scaling app service
+## Scaling api service
 
-Configure and start up "app" mode with 3 "app" replicas:
-
-```
-bin/mdc app
-docker compose up --scale app=3 --force-recreate --build
-```
-
-Create a new user via the second app service:
-```
-curl localhost:8001/users/ -X POST -H "Content-type: application/json" -d '{"name":"Doug","email": "doug@example.com"}'
-```
-
-Then query the users via the third app service to show that the DB is
-shared state and has been udpated with the new user:
+Configure and start up "dhcp" mode and then scale it to 3 "api" replicas:
 
 ```
-curl localhost:8002/users/
+bin/mdc dhcp
+docker compose up --scale api=3 --force-recreate --build
 ```
 
