@@ -6,8 +6,8 @@ Setup Page
 <br>
 <br>
 <span>
-<button class="start-share-screen" data-targets="video0 video1 video2 video3 video4 video5">Start terminal share</button>
-<button class="stop-share-screen" data-targets="video0 video1 video2 video3 video4 video5">Stop terminal share</button>
+<button class="start-share-screen" data-targets="video0 video1 video2 video3 video4">Start terminal share</button>
+<button class="stop-share-screen" data-targets="video0 video1 video2 video3 video4">Stop terminal share</button>
 <br>
 <video id="video0" style="width:30%; height:30%;" autoplay muted></video>
 </span>
@@ -24,17 +24,15 @@ Setup Page
 Notes:
 
 * Setup:
-  * Set external HDMI to 1920x1200
+  * Set external HDMI to 1920x1200 (16x10)
   * start split presenter/presentation windows
   * Start two terminals
-    * Large font size in one (different desktop) 80x44 x 2
+    * Large font size in one (different desktop) 100x13 x 2
     * Small font size (same desktop as presenter window)
-  * Set in large terminal:
-    * `PROMPT_COMMAND='echo -ne "\033]0;Demo\007"'`
   * Share large terminal
   * Open grafana in audience browser window (make sure logged in)
   * tmix setup:
-    * windows: bash, direct, dhcp, monitor
+    * windows: direct, dhcp, monitor
     * export `COMPOSE_PROJECT_NAME` in each
     * make sure right dc is on path
     * clear all frames
@@ -100,6 +98,7 @@ _Tools that Enable Data-Defined and Containerized Testing of Multi-Service Netwo
 
 Notes:
 
+- <font color="green">1:30</font>
 - A bit of a mouthful
 
 - Focus of this presentation is on tools.
@@ -108,9 +107,10 @@ Notes:
     - data-defined tools development and testing.
     - containerized
     - clojure: the major tools I'm going to show are written in Clojure
-- <b>Lot to cover so I won't take question during the talk but I would
-  love to answer any questions people have either in the discussion
-  channel or in the hall-way track!</b>
+- <b>Lot to cover so I won't take question during the talk and
+  probably won't have time after. But I want to answer any questions
+  people have either in a Discord discussion channel or in the
+  hall-way track!</b>
 
 ---
 
@@ -165,9 +165,12 @@ Notes:
   - Syntax is data that defines the AST data-structure that will be
     generated in memory.
 
----
+-----
+
+<br>
 
 ### Data-defined protocols
+<!-- .slide: class="fullslide" -->
 
 #### [clj-protocol](https://github.com/lonocloud/clj-protocol)
 
@@ -270,8 +273,10 @@ Notes:
 
 ---
 
-### DHCP server implementation
+<br>
 
+### DHCP server implementation
+<!-- .slide: class="fullslide" -->
 
 <div class="columns">
   <div class="column column-5">
@@ -371,12 +376,16 @@ Notes:
 
 -----
 
+<br>
+
 ### The System
 <!-- .slide: class="fullslide" data-transition="none" -->
 
 <img src="demo-composition-full.png" style="width: 60%"/>
 
 Notes:
+
+- <font color="green">5:30</font>
 - here is the full system that I will be using to demonstrate the
   tools and data-defined approach
 - quick summary:
@@ -397,6 +406,8 @@ Notes:
 
 ---
 
+<br>
+
 ### The System: simplified
 <!-- .slide: class="fullslide" data-transition="none" -->
 
@@ -411,7 +422,9 @@ Notes:
 
 -----
 
-### Data-defined services: [docker compose](http://docs.docker.com/compose)
+### Data-defined services
+
+#### [docker compose](http://docs.docker.com/compose)
 
 <div class="columns">
 
@@ -483,35 +496,14 @@ INSERT INTO users (name, email, version) VALUES
 </div>
 
 Notes:
+
+- <font color="green">7:30</font>
 - answer: docker-compose
 - here is our simplified essentials defined using docker-compose
     - api: builds from a directory, exposes port 8000 to the world
     - db: generic postgres image, with DB setting
     - volume mount of a directory that defines schema and seed data in
       a nearly data-defined way.
-
------
-
-### Demo: docker compose
-
-Notes:
-- <font color="red">[next page]</a>
-
----
-
-<!-- .slide: class="videoslide" --><video id="video1" autoplay muted></video>
-
-Notes:
-
-<pre>
-docker compose -f simple-compose.yaml up --force-recreate  # LEFT
-CURL localhost:8000/users  # RIGHT
-CURL localhost:8000/users -d '{"name":"Kay","email":"k@example.com"}'  # RIGHT
-CURL localhost:8000/users  # RIGHT
-# Can see API requests hitting the API service
-Ctrl-C  # LEFT
-</pre>
-
 
 -----
 
@@ -579,10 +571,8 @@ Notes:
   merge multiple compose files.
 
 - here is an example two compose files are being merged together
-    - essentially a deep merge with array values appending and map
-      values merged
-    - a few special cases
-        - environments and volumes are merged as a map even if defined as a list
+    - essentially docker overlay does a deep merge with array values
+      appended and map values merged
 - compose overlays have limitations:
   - Unwieldy once you have more than 2 files.
   - No way to represent dependencies.
@@ -590,6 +580,8 @@ Notes:
     does not have an image or build defined.
 
 ---
+
+<br>
 
 #### [mdc](https://github.com/lonocloud/conlink/blob/master/mdc) (modular docker compose)
 <!-- .slide: class="fullslide" -->
@@ -613,6 +605,7 @@ Notes:
 
 Notes:
 
+- <font color="green">10:00</font>
 - mdc
     - allows us to define groups of services as modules and then
       we can "compose" them together.
@@ -649,6 +642,7 @@ Notes:
 
 Notes:
 
+- <font color="green">12:00</font>
 - docker compose has major networking limitations
     - basically layer 3 (IP) only
     - simplistic / flat view of networks and IP assignment
@@ -717,6 +711,8 @@ Notes:
 - can also be specified in separate network config files.
 
 ---
+
+<br>
 
 ### conlink + mdc
 <!-- .slide: class="fullslide" -->
@@ -829,6 +825,7 @@ checks:
 
 Notes:
 
+- <font color="green">16:00</font>
 - another challenge when you have lots of services defined in docker
   compose is the flood of logs to analyze to figure out the state of
   the system
@@ -847,23 +844,27 @@ Notes:
 
 Notes:
 - Let's move on to a demo of mdc, conlink, and dcmon
-- [next page]
+- <font color="green">17:00</font>
+- <font color="red">[next page]</font>
 
 ---
-<!-- .slide: class="videoslide" --><video id="video2" autoplay muted></video>
+<!-- .slide: class="videoslide" --><video id="video1" autoplay muted></video>
 
 Notes:
 
+- <font color="red">[check shared screen]</font>
 - DEMO part 1
   - direct:
     - mdc direct
     - dcmon in one window, then `up --force-recreate`
     - dc logs -f, describe logs
-    - CURL localhost:8001/users
+    - `CURL localhost:8001/users`
     - do scale up
         - see conlink create both interfaces (north and south)
-    - CURL localhost:8002/users  # different port, different api
-        - shows conlink assigning incrementing IP based on scale
+    - `CURL localhost:8002/users  # different port, different api
+    - `CURL localhost:8003/users -d '{"name":"Kay","email":"k@example.com"}'`
+    - `CURL localhost:8001/users`
+        - see consistent state across api servers
     - leave up!
   - dhcp:
     - mdc dhcp, up -d, dcmon
@@ -884,7 +885,7 @@ Notes:
     - leave up!
 
 ---
-<!-- .slide: class="videoslide" --><video id="video3" autoplay muted></video>
+<!-- .slide: class="videoslide" --><video id="video2" autoplay muted></video>
 
 Notes:
 
@@ -924,15 +925,18 @@ Notes:
 
 Notes:
 
+- <font color="green">26:30</font>
 - instacheck library provides a method of data-defined testing
-- specifically generative testing or property-based testing
+- technique it uses is known as generative testing or property-based testing
 
-- generative testing define two things:
+- in generative testing, rather than defining individual tests, we define:
     - how to generate tests
     - how to validate those tests
-- instacheck
-    - instacheck defines tests using a formal grammar called EBNF
-        - rather than traditional approach of defining code generators
+- instacheck specifically:
+     - traditional approach creates a hierarchy of functions that
+       generating tests
+        - but in instacheck we define tests using a formal grammar
+          language called EBNF
     - define how to validate results
       - Oracle problem: a way to determine if the results are correct
         given the generated test.
@@ -940,9 +944,10 @@ Notes:
         up defining a whole parallel model for how the system works.
       - for distributed network systems, the problem is often that
         things work in the small but don't when deployed in
-        production.
-      - For that situation, we have an answer to the Oracl problem:
+        production with all extra complexities that involves.
+      - For that situation, we have an answer to the Oracle problem:
           - Use the simpler deployment as the Oracle!
+          - And use that to validate the more complex configuration.
 
 ---
 
@@ -978,18 +983,19 @@ email      = 'joe' #"[0-9]" '@example.com'
 
 Notes:
 
-- Here is the EBNF for tests that we are going to generate. In this
-  case we are generating a JSON list of maps where each map defines an
-  HTTP to send.
+- Here is the EBNF grammar for tests that we are going to generate. In
+  this case we are generating a JSON list of maps where each map
+  defines an HTTP request to send.
 - Technically this is an EBNF grammar for a parser that can parse our
   test defintions.
-- But instacheck uses this in reverse and generates tests that fit the
-  grammar.
-- If you look at the generation of IDs right in the middle, it's
-  basically a logical OR alternation.
-- But note the special comments for the digits 1 and 2. The default
-  weight for each alternation branch in the grammar is 100. We set
-  1 and 2 to be generated 10 and 5 times as often respectively.
+- But instacheck uses this in reverse and output tests that conform to
+  the grammar.
+- If you look at the rule for IDs right in the middle, it's
+  alternation between non-zero the digits.
+- Instacheck adds the concept of weights that adjust the probability
+  that different options will be chosen during generation.
+    - It support inline weights via a special comment syntax and
+      external weights files.
 
 ---
 
@@ -1020,10 +1026,10 @@ Notes:
 
 Notes:
 
-- Here are the paths through the grammar and the resulting weights at
-  each alternation or repetition point in the grammar.
-- gentest can load a custom weights file to adjust the generation
-  process.
+- Here is an external EDN file that defines weights for the EBNF
+  grammar I just displayed.
+- instacheck can load a custom weights file to adjust the
+  probabilities during test generation.
 
 ---
 
@@ -1053,48 +1059,51 @@ $ cat output/samp-00*
 
 Notes:
 
-- Here we use gentest to just generate raw test cases. On average each
+- gentest is a command that wraps instacheck functionality.
+- This shows using gentest to generate raw test cases. On average each
   test case iteration gets bigger or more complicated.
 - Greatly increases the probability of finding bugs.
 - However, massive test cases are not very useful for testing and
   debug, so instacheck uses shrinking process to search for a simpler
-  version of the test case that still fails.
+  version of the test case that continue to fail.
 
 -----
 
 ### Demo: instacheck/gentest
 
 Notes:
-- [next page]
+- Now I'm going to demo gentest and instacheck
+- <font color="red">[next page]</font>
 
 ---
-<!-- .slide: class="videoslide" --><video id="video4" autoplay muted></video>
+<!-- .slide: class="videoslide" --><video id="video3" autoplay muted></video>
 
 
 Notes:
 
-- DEMO
-    - start up direct and dhcp instances [restart dhcp]
-        - we have two instances running now. The full system and the
-          simpler direct instance we are using as a test Oracle.
-    - generate and run tests against the two instances:
+- <font color="green">31:30</font>
+- DEMO <font color="red">[check shared screen]</font>
+    - restart dhcp without impairments
+        - we have two instances running now. The full dhcp system and
+          the simple direct instance we are using as a test Oracle.
+    - full gentest check against our two instances:<br>
       `gentest check http://localhost:8000 http://localhost:8001`
-        - show samples
-    - add synthetic bug module and restart dhcp
+    - add synthetic bug module (`mdc dhcp,bug`), restart dhcp
     - show testing again
-        - run a few times until failure
+        - failure
             - describe result output
             - SEED: 1729643716824
-        - use run command with sample
+        - use run command with sample:<br>
           `gentest run http://localhost:8000 http://localhost:8001 output/sample-final` 
-    - load weights from existing failures for faster reproduction
+    - use parse command to show paths through our grammar:<br>
       `gentest parse http://localhost:8000 http://localhost:8001 output/sample-final`
-        - shows 
-        - show faster/better reproduction
-        - capture/show response logs and what is actually
-          different
-    - show parse --ebnf-output with EBNF rewritten to remove paths
-      with 0 weight. Re-run check with new EBNF file.
+        - every path and how many times that path was traversed.
+        - 0 means that part of grammar was not used by this test case
+    - variant of parse cmd to generate a new version of grammar:<br>
+      `gentest parse --ebnf-output http://localhost:8000 http://localhost:8001 output/sample-final`
+        - all grammar paths that had 0's have been pruned
+        - left with a much simpler grammar. Can use it to generate
+          probabalistically similar test cases.
 
 -----
 
@@ -1189,6 +1198,7 @@ tests:
 
 Notes:
 
+- <font color="green">37:00</font>
 - Once we have data-defined tests, we want to be able to data-define
   test suites. That's what the dctest project is about.
 - Unfortunatley, I'm not going to have time to demo it today.
@@ -1354,7 +1364,7 @@ Notes:
 - copy.sh
 
 -----
-<!-- .slide: class="videoslide" --><video id="video5" autoplay muted></video><br/>
+<!-- .slide: class="videoslide" --><video id="video4" autoplay muted></video><br/>
 <button class="start-share-screen" data-targets="video0 video1 video2 video3 video4 video5">Start Share</button>
 
 -----
