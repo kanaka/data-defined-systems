@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+cd $(dirname "$0")/..
+TOP=$(pwd)
+COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME:-$(basename "${TOP}")}
+. "${TOP}/.env"
+
+time ./dctest/dctest \
+    --verbose-commands \
+    --results-file dctest-results.json \
+    ${COMPOSE_PROJECT_NAME} \
+    "${@}"
