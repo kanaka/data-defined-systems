@@ -24,6 +24,15 @@ video {
 
 /*********************/
 
+.reveal table td, .reveal table th {
+  border: 1px solid;
+}
+.reveal table {
+  border-bottom: 1px solid;
+}
+
+/*********************/
+
 figure {
   text-align: center;
 }

@@ -1,52 +1,7 @@
 ### Tools that Enable Data-Defined and Containerized Testing of Multi-Service Networked Systems
 
-Setup Page
-
 <br>
 <br>
-<br>
-<span>
-<button class="start-share-screen" data-targets="video0 video1 video2 video3 video4">Start terminal share</button>
-<button class="stop-share-screen" data-targets="video0 video1 video2 video3 video4">Stop terminal share</button>
-<br>
-<video id="video0" style="width:30%; height:30%;" autoplay muted></video>
-</span>
-<br>
-<!--
-<span>
-<button class="start-share-screen" data-targets="web0 web1">Start web share</button>
-<button class="stop-share-screen" data-targets="web0 web1">Stop web share</button>
-<br>
-<video id="web0" style="width:30%; height:30%;" autoplay muted></video>
-</span>
--->
-
-Notes:
-
-* Setup:
-  * Set external HDMI to 1920x1200 (16x10)
-  * start split presenter/presentation windows
-  * Start two terminals
-    * Large font size in one (different desktop) 100x13 x 2
-    * Small font size (same desktop as presenter window)
-  * Share large terminal
-  * Open grafana in audience browser window (make sure logged in)
-  * tmix setup:
-    * windows: direct, dhcp, monitor
-    * export `COMPOSE_PROJECT_NAME` in each
-    * make sure right dc is on path
-    * clear all frames
-
------
-
-### Tools that Enable Data-Defined and Containerized Testing of Multi-Service Networked Systems
-
-<br>
-<br>
-
-Clojure/conj 2024
-
-*Joel Martin*
 
 <br>
 <figure class="fragment">
@@ -57,32 +12,11 @@ Clojure/conj 2024
 Notes:
  
 * Reset timer
-* Welcome everyone to first session of the morning
 * [Read title]
 * Or as this talk could have been titled:
   "What this system needs is more YAML!"
-* So whether you love or hate YAML, I hope you're able to get
-  something out of this talk.
-
----
-
-### About Me
-
-* Clojure engineer at LonoCloud in 2011
-* LonoCloud was acquired by Viasat in 2013
-* Started at Equinix this year (2024)
-* PhD in CS in 2019 (Generative Testing of Browser Render Engines)
-* Clojurescript-in-Clojurescript (2013 Clojure West)
-* Created Make-a-Lisp / mal
-* Open source: noVNC, websockify, raft.js, miniMAL, wam
-
-Notes:
-
-* start with a quick personal intro
-* [READ]
-* Some additional open source projects I started
-* But today I am going to cover some different open source projects I am
-  involved with
+  * But whether you love or hate YAML, I hope you're able to get
+    something out of this talk.
 
 -----
 
@@ -98,7 +32,6 @@ _Tools that Enable Data-Defined and Containerized Testing of Multi-Service Netwo
 
 Notes:
 
-- <font color="green">1:30</font>
 - A bit of a mouthful
 
 - Focus of this presentation is on tools.
@@ -107,10 +40,6 @@ Notes:
     - data-defined tools development and testing.
     - containerized
     - clojure: the major tools I'm going to show are written in Clojure
-- <b>Lot to cover so I won't take question during the talk and
-  probably won't have time after. But I want to answer any questions
-  people have either in a Discord discussion channel or in the
-  hall-way track!</b>
 
 ---
 
@@ -124,7 +53,13 @@ and behavior of the system.**
 
 Notes:
 
-- [skip terms]
+- Other terms in this space that also aren't quite right are
+  "data-driven", "declarative", "spec-driven", and "data-first". But
+  each of those is a bit of a "term-of-art" with narrower meanings
+  than what I'm getting at.
+- I've been the fence about which term is best.
+- I currently prefer "data-defined" but none is perfect.
+
 
 ---
 
@@ -159,11 +94,32 @@ Notes:
 - Greater interoperability and openness: other tools can consume and generate data
 - Easier testing and behavior simulation: especially generative testing
 
-
 - Given the name on this conference I'm obliged to point out that
   Clojure itself emobodies a data-defined approach.
   - Syntax is data that defines the AST data-structure that will be
     generated in memory.
+
+-----
+
+### Why not data-defined?
+
+- Can be less readable
+- Tendency for data sprawl
+- Harder to trace and debug
+
+Notes:
+
+- not all roses, there are some potential downsides to data-defined
+  approach
+- Can be less readable: behavior can be emergent rather hard-coded in code
+- Data sprawl: can be harder to determine interactions and
+  dependencies between different parts of the data
+- Harder to trace and debug: downside of logic and behavior being distinct
+    - e.g. a stack trace may point a line of code that is opaque
+      without the additional data context
+
+- for the most part, these downsides aren't fundamental but rather
+  point to a tooling gap
 
 -----
 
@@ -264,7 +220,7 @@ Notes:
 
 Notes:
 
-- another data-defined example
+- a non-trivial data-defined example
 - clj-protocol takes a data-defined approach to network protocols
 - clj-protocol includes a definition of the DHCP protocol
 - sort of looks like it was pulled straight out of standards spec
@@ -385,7 +341,6 @@ Notes:
 
 Notes:
 
-- <font color="green">5:30</font>
 - here is the full system that I will be using to demonstrate the
   tools and data-defined approach
 - quick summary:
@@ -497,7 +452,6 @@ INSERT INTO users (name, email, version) VALUES
 
 Notes:
 
-- <font color="green">7:30</font>
 - answer: docker-compose
 - here is our simplified essentials defined using docker-compose
     - api: builds from a directory, exposes port 8000 to the world
@@ -605,7 +559,6 @@ Notes:
 
 Notes:
 
-- <font color="green">10:00</font>
 - mdc
     - allows us to define groups of services as modules and then
       we can "compose" them together.
@@ -625,6 +578,56 @@ Notes:
   networking; it is very limited when it comes to testing more complex
   production networks which leads us to:
 
+---
+
+<br>
+
+### Data-defined module dependencies
+
+#### [resolve-deps](https://github.com/viasat/resolve-deps)
+
+- Used by mdc for module dependency resolution
+- Supports alternate deps: `foo|bar`
+- Supports order-only (weak) deps: `+foo`
+
+<br>
+<br>
+
+<div class="columns">
+  <div class="column column-5">
+
+<img src="demo-mdc-2-deps.png" width="100%"/>
+
+  </div>
+  <div class="column column-3">
+
+<br><br>
+
+| module name | `deps` file        |
+| ----------- | ------------------ |
+| `conlink`   |                    |
+| `api`       | `conlink`          |
+| `direct`    | `conlink api`      |
+| `balanced`  | `conlink api`      |
+| `static`    | `conlink balanced` |
+| `dhcp`      | `conlink balanced` |
+<!-- .element class="reduce-font" -->
+
+  </div>
+</div>
+
+Notes:
+
+- Each deps file contains a space separated list of other modules that
+  this module depends on.
+- Syntax supports alternates using a bar `|`.
+  - All alternate paths will be considered and the shortest (fewest
+    module) resolution will be selected that still fulfills explicitly
+    requested modules.
+- Syntax also supports order-only (weak) deps using a `+` prefix.
+  - Weak deps must be pulled in by some other dep or explicit user
+    request, but if they are then this effects the order.
+
 -----
 
 ### Data-defined networks
@@ -642,7 +645,6 @@ Notes:
 
 Notes:
 
-- <font color="green">12:00</font>
 - docker compose has major networking limitations
     - basically layer 3 (IP) only
     - simplistic / flat view of networks and IP assignment
@@ -825,7 +827,6 @@ checks:
 
 Notes:
 
-- <font color="green">16:00</font>
 - another challenge when you have lots of services defined in docker
   compose is the flood of logs to analyze to figure out the state of
   the system
@@ -844,7 +845,6 @@ Notes:
 
 Notes:
 - Let's move on to a demo of mdc, conlink, and dcmon
-- <font color="green">17:00</font>
 - <font color="red">[next page]</font>
 
 ---
@@ -925,7 +925,6 @@ Notes:
 
 Notes:
 
-- <font color="green">26:30</font>
 - instacheck library provides a method of data-defined testing
 - technique it uses is known as generative testing or property-based testing
 
@@ -1081,7 +1080,6 @@ Notes:
 
 Notes:
 
-- <font color="green">31:30</font>
 - DEMO <font color="red">[check shared screen]</font>
     - restart dhcp without impairments
         - we have two instances running now. The full dhcp system and
@@ -1198,7 +1196,6 @@ tests:
 
 Notes:
 
-- <font color="green">37:00</font>
 - Once we have data-defined tests, we want to be able to data-define
   test suites. That's what the dctest project is about.
 - Unfortunatley, I'm not going to have time to demo it today.
@@ -1261,15 +1258,26 @@ Notes:
 
 -----
 
-<div class="columns">
-  <div class="column column-5">
+#### Current Project Contributors:
+
+  * Aaron Brooks (Equinix)
+  * Joel Martin (Equinix)
+  * Jon Smock (Viasat)
+  * Norman Morales Suarez (Viasat)
+  * Greg Warner (Viasat)
+
+Notes:
+
+- I want to thank the current active contributors to these projects.
+- [READ names]
+
+-----
 
 #### Links
 
-* This Presentation:<br>
-  [kanaka.github.io/data-defined-systems/presentations/conj-2024](https://kanaka.github.io/data-defined-systems/presentations/conj-2024)
-* Demo System:<br>
-  [github.com/kanaka/data-defined-systems](https://github.com/kanaka/data-defined-systems)
+* This Presentation: [kanaka.github.io/data-defined-systems/presentations/main](https://kanaka.github.io/data-defined-systems/presentations/main)
+* Clojure/conj 2024 Presentation: [kanaka.github.io/data-defined-systems/presentations/conj-2024](https://kanaka.github.io/data-defined-systems/presentations/conj-2024)
+* Demo System: [github.com/kanaka/data-defined-systems](https://github.com/kanaka/data-defined-systems)
 * Projects:
   * conlink: [lonocloud.github.io/conlink/](https://lonocloud.github.io/conlink/)
   * mdc: [github.com/lonocloud/conlink/blob/master/mdc](https://github.com/lonocloud/conlink/blob/master/mdc)
@@ -1279,26 +1287,10 @@ Notes:
   * instacheck: [github.com/kanaka/instacheck](https://github.com/kanaka/instacheck)
   * dctest: [viasat.github.io/dctest](https://viasat.github.io/dctest)
 
-  </div>
-  <div class="column column-3">
-
-#### Current Project Contributors:
-
-  * Aaron Brooks (Equinix)
-  * Joel Martin (Equinix)
-  * Jon Smock (Viasat)
-  * Norman Morales Suarez (Viasat)
-  * Greg Warner (Viasat)
-
-  </div>
-</div>
-
 Notes:
 
 - Here are links to this presentation, the demo system, and the
-  varous projects.
-- I also want to thank the other current active contributors to these
-  projects. [READ names]
+  varous prresolve-deps](https://github.com/viasat/resolve-deps)ojects.
 - These tools are at various stages of maturity but all still
   in-progress.
 - If these tools or the data-defined approach is something that
@@ -1308,29 +1300,68 @@ Notes:
 
 -----
 
+### Questions?
+
+-----
+
 ### Extra Slides
 
 -----
 
-### Why not data-defined?
+### Tools that Enable Data-Defined and Containerized Testing of Multi-Service Networked Systems
 
-- Can be less readable
-- Tendency for data sprawl
-- Harder to trace and debug
+Setup Slide
+
+<br>
+<br>
+<br>
+<span>
+<button class="start-share-screen" data-targets="video0 video1 video2 video3 video4">Start terminal share</button>
+<button class="stop-share-screen" data-targets="video0 video1 video2 video3 video4">Stop terminal share</button>
+<br>
+<video id="video0" style="width:30%; height:30%;" autoplay muted></video>
+</span>
+<br>
+<!--
+<span>
+<button class="start-share-screen" data-targets="web0 web1">Start web share</button>
+<button class="stop-share-screen" data-targets="web0 web1">Stop web share</button>
+<br>
+<video id="web0" style="width:30%; height:30%;" autoplay muted></video>
+</span>
+-->
 
 Notes:
 
-- not all roses, there are some potential downsides to data-defined
-  approach
-- Can be less readable: behavior can be emergent rather hard-coded in code
-- Data sprawl: can be harder to determine interactions and
-  dependencies between different parts of the data
-- Harder to trace and debug: downside of logic and behavior being distinct
-    - e.g. a stack trace may point a line of code that is opaque
-      without the additional data context
+* Setup:
+  * Set external HDMI to 1920x1200 (16x10)
+  * start split presenter/presentation windows
+  * Start two terminals
+    * Large font size in one (different desktop) 100x13 x 2
+    * Small font size (same desktop as presenter window)
+  * Share large terminal
+  * Open grafana in audience browser window (make sure logged in)
+  * tmix setup:
+    * windows: direct, dhcp, monitor
+    * export `COMPOSE_PROJECT_NAME` in each
+    * make sure right dc is on path
+    * clear all frames
 
-- for the most part, these downsides aren't fundamental but rather
-  point to a tooling gap
+-----
+
+### About Joel Martin
+
+* Clojure engineer at LonoCloud in 2011
+* LonoCloud was acquired by Viasat in 2013
+* Started at Equinix this year (2024)
+* PhD in CS in 2019 (Generative Testing of Browser Render Engines)
+* Clojurescript-in-Clojurescript (2013 Clojure West)
+* Created Make-a-Lisp / mal
+* Open source: noVNC, websockify, raft.js, miniMAL, wam
+
+Notes:
+
+* [READ]
 
 -----
 
