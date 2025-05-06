@@ -21,8 +21,8 @@ In addition all the tools (apart from docker compose) are implemented
 primarily in Clojure. However, Clojure knowledge is not required to
 make use of these tools.
 
-[Here](https://kanaka.github.io/data-defined-systems/presentations/main)
-is a presentation about the approach and tools. The presentation uses
+This project was used for the talk ["Data Driven and Containerized Testing of Multi Service Networked Systems"](https://www.youtube.com/watch?v=rZaouaZq7t8) at Clojure Conj 2024.
+The presentation slides are [here](https://kanaka.github.io/data-defined-systems/presentations/main). The presentation uses
 reveal.js (press [space] to progress). Most of the text content is in
 the speaker notes (press [s] to bring up the speaker mode with notes.
 
